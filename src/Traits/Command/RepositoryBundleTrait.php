@@ -56,6 +56,6 @@ trait RepositoryBundleTrait
 		);
 		$io->note('Remember username/repository-name');
 
-		return $io->ask('Replace repository from "idmarinas/idm-template-bundle" to', null, $validation);
+		return $io->ask('Replace repository from "idmarinas/template-bundle" to', null, $validation);
 	}
 }
