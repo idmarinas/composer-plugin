@@ -1,0 +1,59 @@
+{
+	"name": "idmarinas/composer-plugin",
+	"description": "Composer plugin",
+	"type": "composer-plugin",
+	"license": "BSD-3-Clause",
+	"keywords": [
+		"composer-plugin"
+	],
+	"homepage": "https://github.com/idmarinas/composer-plugin",
+	"authors": [
+		{
+			"name": "Iván Diaz Marinas (IDMarinas)",
+			"email": "35842929+idmarinas@users.noreply.github.com",
+			"role": "Creator, Developer"
+		}
+	],
+	"support": {
+		"issues": "https://github.com/idmarinas/composer-plugin/issues"
+	},
+	"minimum-stability": "stable",
+	"prefer-stable": true,
+	"require": {
+		"php": "^8.2",
+		"composer-plugin-api": "^2.1",
+		"symfony/lock": "^6.4 | ^7.0",
+		"symfony/filesystem": "^6.4 | ^7.0",
+		"symfony/finder": "^6.4 | ^7.0",
+		"symfony/string": "^6.4 | ^7.0",
+		"symfony/validator": "^6.4 | ^7.0"
+	},
+	"require-dev": {
+		"composer/composer": "^2.1",
+		"phpunit/phpunit": "^9.6"
+	},
+	"config": {
+		"optimize-autoloader": false,
+		"sort-packages": true
+	},
+	"autoload": {
+		"psr-4": {
+			"Idm\\Composer\\Plugin\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Idm\\Composer\\Plugin\\Tests\\": "tests/"
+		}
+	},
+	"extra": {
+		"class": "Idm\\Composer\\Plugin\\Plugin",
+		"plugin-optional": true
+	},
+	"funding": [
+		{
+			"type": "paypal",
+			"url": "https://www.paypal.me/idmarinas"
+		}
+	]
+}
