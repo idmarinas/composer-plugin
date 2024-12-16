@@ -226,10 +226,11 @@ EOF
 			case 'Default.xml':
 				if (u($file->getPathname())->containsAny('copyright')) {
 					$content = u($content)
+						->replace('https://github.com/idmarinas/idm-template-bundle', $bundleInfo->getGithubUrl())
 						->replaceMatches('/Copyright \d+ (C)/', 'Copyright ' . date('Y') . ' (C)')
 						->replaceMatches('/@date +\d{2}\/\d{2}\/\d{2}/', '@date    ' . date('d/m/Y'))
 						->replaceMatches('/@time +\d{2}:\d{2}/', '@time    ' . date('H:i'))
-						->replaceMatches('/@project +Idm Template Bundle/', '@project ' . $bundleInfo->getProjectName())
+						->replaceMatches('/@project +IDMarinas Template Bundle/', '@project ' . $bundleInfo->getProjectName())
 					;
 				}
 				break;
