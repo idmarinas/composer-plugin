@@ -159,6 +159,7 @@ EOF
 			->replaceMatches('/(use|namespace) (Idm\\\Bundle\\\Template)(;|\\\)/', function ($match) use ($bundleInfo) {
 				return sprintf('%s %s%s', $match[1], $bundleInfo->getNamespace(), $match[3]);
 			})
+			->replace('Idm\Bundle\Template\\', $bundleInfo->getNamespace() . '\\')
 			->toString()
 		;
 
