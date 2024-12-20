@@ -198,12 +198,13 @@ EOF
 				;
 				break;
 			case '.gitignore':
-				$content = u($content)->replaceMatches(
-					'/###(<|>) idmarinas\/template-bundle ###/',
-					function ($match) use ($bundleInfo) {
-						return sprintf('###%s %s ###', $match[1], $bundleInfo->getRepository());
-					}
-				)->toString();
+				$content = u($content)
+					->replaceMatches(
+						'/###(<|>) idmarinas\/(idm-|)template-bundle ###/',
+						fn($match) => sprintf('###%s %s ###', $match[1], $bundleInfo->getRepository())
+					)
+					->toString()
+				;
 				break;
 			case 'README.md':
 				$finder = (new Finder())
@@ -222,12 +223,7 @@ EOF
 						->toString()
 					;
 					$content = u($content)
-						->replaceMatches(
-							'/<!-- readme-template -->.+<!-- readme-template -->/',
-							function () use ($file) {
-								return $file;
-							}
-						)
+						->replaceMatches('/<!-- readme-template -->(?s:.)+<!-- readme-template -->/', $file)
 						->replace('idmarinas/template-bundle', $bundleInfo->getRepository())
 						->replace('idmarinas/REPOSITORY_NAME_CHANGE_ME', $bundleInfo->getRepository())
 						->replace('# IDMarinas Template Bundle', '# ' . $bundleInfo->getProjectName())
