@@ -211,7 +211,9 @@ EOF
 				;
 
 				if ($finder->hasResults()) {
-					$file = $finder->getIterator()->current()->getContents();
+					$file = $finder->getIterator();
+					$file->rewind();
+					$file = $file->current()->getContents();
 					$file = u($file)
 						->replace('<package-name>', $bundleInfo->getRepository())
 						->replace('<vendor>\<bundle-name>\<bundle-long-name>', $bundleInfo->getBundleClassName())
