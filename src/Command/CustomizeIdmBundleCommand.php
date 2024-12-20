@@ -203,7 +203,7 @@ EOF
 					function ($match) use ($bundleInfo) {
 						return sprintf('###%s %s ###', $match[1], $bundleInfo->getRepository());
 					}
-				);
+				)->toString();
 				break;
 			case 'README.md':
 				$finder = (new Finder())
@@ -231,6 +231,7 @@ EOF
 						->replace('idmarinas/template-bundle', $bundleInfo->getRepository())
 						->replace('idmarinas/REPOSITORY_NAME_CHANGE_ME', $bundleInfo->getRepository())
 						->replace('# IDMarinas Template Bundle', '# ' . $bundleInfo->getProjectName())
+						->toString()
 					;
 				}
 				break;
