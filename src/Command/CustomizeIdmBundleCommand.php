@@ -224,6 +224,7 @@ EOF
 						)
 						->replace('idmarinas/template-bundle', $bundleInfo->getRepository())
 						->replace('idmarinas/REPOSITORY_NAME_CHANGE_ME', $bundleInfo->getRepository())
+						->replace('# IDMarinas Template Bundle', '# ' . $bundleInfo->getProjectName())
 					;
 				}
 				break;
