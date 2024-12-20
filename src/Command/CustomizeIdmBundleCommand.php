@@ -200,7 +200,9 @@ EOF
 			case '.gitignore':
 				$content = u($content)->replaceMatches(
 					'/###(<|>) idmarinas\/template-bundle ###/',
-					fn($match) => sprintf('###%s %s ###', $match[1], $bundleInfo->getRepository())
+					function ($match) use ($bundleInfo) {
+						return sprintf('###%s %s ###', $match[1], $bundleInfo->getRepository());
+					}
 				);
 				break;
 			case 'README.md':
@@ -222,7 +224,9 @@ EOF
 					$content = u($content)
 						->replaceMatches(
 							'/<!-- readme-template -->.+<!-- readme-template -->/',
-							fn($match) => $file
+							function () use ($file) {
+								return $file;
+							}
 						)
 						->replace('idmarinas/template-bundle', $bundleInfo->getRepository())
 						->replace('idmarinas/REPOSITORY_NAME_CHANGE_ME', $bundleInfo->getRepository())
