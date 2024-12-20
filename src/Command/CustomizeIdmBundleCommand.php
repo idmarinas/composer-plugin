@@ -200,9 +200,7 @@ EOF
 			case '.gitignore':
 				$content = u($content)->replaceMatches(
 					'/###(<|>) idmarinas\/template-bundle ###/',
-					function ($match) use ($bundleInfo) {
-						return sprintf('###%s %s ###', $match[1], $bundleInfo->getRepository());
-					}
+					fn($match) => sprintf('###%s %s ###', $match[1], $bundleInfo->getRepository())
 				);
 				break;
 		}
