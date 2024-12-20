@@ -242,7 +242,7 @@ EOF
 		return $renameFile;
 	}
 
-	private function saveFile (SplFileInfo $file, $renameFile, $content, Filesystem $filesystem): void
+	private function saveFile (SplFileInfo $file, string $renameFile, string $content, Filesystem $filesystem): void
 	{
 		$filesystem->dumpFile($file->getPathname(), $content);
 
