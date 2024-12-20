@@ -203,6 +203,30 @@ EOF
 					fn($match) => sprintf('###%s %s ###', $match[1], $bundleInfo->getRepository())
 				);
 				break;
+			case 'README.md':
+				$finder = (new Finder())
+					->in(dirname(__DIR__, 2) . '/templates')
+					->files()
+					->name('readme.tpl.md')
+				;
+
+				if ($finder->hasResults()) {
+					$file = $finder->getIterator()->current()->getContents();
+					$file = u($file)
+						->replace('<package-name>', $bundleInfo->getRepository())
+						->replace('<vendor>\<bundle-name>\<bundle-long-name>', $bundleInfo->getBundleClassName())
+						->toString()
+					;
+					$content = u($content)
+						->replaceMatches(
+							'/<!-- readme-template -->.+<!-- readme-template -->/',
+							fn($match) => $file
+						)
+						->replace('idmarinas/template-bundle', $bundleInfo->getRepository())
+						->replace('idmarinas/REPOSITORY_NAME_CHANGE_ME', $bundleInfo->getRepository())
+					;
+				}
+				break;
 		}
 
 		return $renameFile;
