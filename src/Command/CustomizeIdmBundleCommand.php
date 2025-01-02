@@ -185,7 +185,12 @@ EOF
 				$manipulator->addMainKey('keywords', ['symfony-bundle']);
 				$manipulator->addSubNode('support', 'issues', $bundleInfo->getGithubUrl() . '/issues');
 				$manipulator->addSubNode('autoload', 'psr-4', [$bundleInfo->getAutoload() => 'src/']);
-				$manipulator->addSubNode('autoload-dev', 'psr-4', [$bundleInfo->getAutoloadDev() => 'tests/']);
+				$manipulator->addSubNode('autoload-dev', 'psr-4', [
+					'App\\' => 'app/src/',
+					$bundleInfo->getAutoloadDev() => 'tests/',
+					'DataFixtures\\' => 'fixtures/',
+					'Factory\\' => 'factories/',
+				]);
 				$manipulator->addConfigSetting('allow-plugins.idmarinas/composer-plugin', false);
 
 				$content = $manipulator->getContents();
@@ -257,12 +262,15 @@ EOF
 						->replaceMatches('/Copyright \d+ (C)/', 'Copyright ' . date('Y') . ' (C)')
 						->replaceMatches('/@date +\d{2}\/\d{2}\/\d{2}/', '@date    ' . date('d/m/Y'))
 						->replaceMatches('/@time +\d{2}:\d{2}/', '@time    ' . date('H:i'))
-						->replaceMatches('/@project +IDMarinas Template Bundle/', '@project ' . $bundleInfo->getProjectName())
+						->toString()
 					;
 				}
 				break;
 			case 'modules.xml':
-				$content = u($content)->replace('IDMarinas Template Bundle.iml', $bundleInfo->getProjectName() . '.iml');
+				$content = u($content)
+					->replace('IDMarinas Template Bundle.iml', $bundleInfo->getProjectName() . '.iml')
+					->toString()
+				;
 				break;
 		}
 
