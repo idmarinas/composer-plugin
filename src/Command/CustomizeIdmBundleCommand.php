@@ -121,8 +121,7 @@ EOF
 			if ($file->isReadable() && $file->isWritable()) {
 				if ('.idea' == $file->getRelativePath()) {
 					$this->replaceContentIdeaOfFile($file, $bundleInfo, $filesystem);
-				}
-				else {
+				} else {
 					$this->replaceContentOfFile($file, $bundleInfo, $filesystem);
 				}
 			}
@@ -160,6 +159,7 @@ EOF
 				return sprintf('%s %s%s', $match[1], $bundleInfo->getNamespace(), $match[3]);
 			})
 			->replace('Idm\Bundle\Template\\', $bundleInfo->getNamespace() . '\\')
+			->replace('(IdmTemplateBundle::class)', '(' . $bundleInfo->getBundleName() . '::class)')
 			->toString()
 		;
 
