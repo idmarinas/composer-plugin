@@ -266,6 +266,13 @@ EOF
 					->toString()
 				;
 				break;
+
+			case 'v.list':
+				$content = u($content)
+					->replace('name="branch" value="1.x"', sprintf('name="branch" value="%s"', $this->bundle->getBranch()))
+					->toString()
+				;
+				break;
 		}
 
 		return $renameFile;
