@@ -91,7 +91,7 @@ trait NamespaceBundleTrait
 		);
 
 		return self::io()->ask(
-			'Replace Namespace/Bundle Class Name from "Idm\Bundle\Template\IdmTemplateBundle" to',
+			'Replace Full Class Name from "Idm\Bundle\Template\IdmTemplateBundle" to',
 			null,
 			$validation
 		);
