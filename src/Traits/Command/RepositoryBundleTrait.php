@@ -31,7 +31,7 @@ trait RepositoryBundleTrait
 	/**
 	 * Repository name
 	 */
-	private function repositoryBundle (): string
+	private function repositoryBundle (?string $default = null): string
 	{
 		//
 		$validation = Validation::createCallable(
@@ -57,6 +57,6 @@ trait RepositoryBundleTrait
 		);
 		self::io()->note('Remember username/repository-name');
 
-		return self::io()->ask('Replace repository from "idmarinas/template-bundle" to', null, $validation);
+		return self::io()->ask('Replace repository from "idmarinas/template-bundle" to', $default, $validation);
 	}
 }
