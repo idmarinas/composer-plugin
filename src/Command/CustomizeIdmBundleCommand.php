@@ -85,7 +85,7 @@ EOF
 
 			$this->bundle->setRepository($repository);
 			$this->bundle->setBranch($branch);
-			
+
 			// Information
 			self::io()->title('Information of your Bundle');
 			self::io()->text('<fg=blue>Bundle name:</> ' . $this->bundle->getBundleName());
@@ -161,9 +161,7 @@ EOF
 				return sprintf('%s %s%s', $match[1], $this->bundle->getNamespace(), $match[3]);
 			})
 			->replace('Idm\Bundle\Template\\', $this->bundle->getNamespace() . '\\')
-			->replaceMatches('/^(\X+)(IdmTemplateBundle)(\X+)$/', function ($match) {
-				return sprintf('%s%s%s', $match[1], $this->bundle->getBundleName(), $match[3]);
-			})
+			->replace('IdmTemplateBundle', $this->bundle->getBundleName())
 			->replace('name: template_bundle', 'name: ' . $this->bundle->getDockerName())
 			->toString()
 		;
