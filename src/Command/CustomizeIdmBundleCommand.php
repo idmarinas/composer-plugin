@@ -44,11 +44,16 @@ final class CustomizeIdmBundleCommand extends BaseCommand
 	use ProgressBarTrait;
 	use RepositoryBundleTrait;
 
+	public function __construct (?string $name = null, private readonly Filesystem $filesystem = new Filesystem())
+	{
+		parent::__construct($name);
+	}
+
 	protected function configure (): void
 	{
 		$this
 			->setName('idm:customize:bundle')
-			->setDescription('Customize Idm Bundle')
+			->setDescription('Customize Idm Template Bundle')
 			->setHelp(
 				<<<'EOF'
 The <info>%command.name%</info> helps you to customize the IdmTemplateBundle with your own name and namespace.
@@ -110,7 +115,6 @@ EOF
 		$progress->setMessage('Analyzing bundle files...');
 		$progress->start($finder->count());
 
-		$filesystem = new Filesystem();
 		$bundleInfo = new BundleInfo($bundleName, $namespace, $repository);
 
 		// Update files
@@ -120,9 +124,9 @@ EOF
 
 			if ($file->isReadable() && $file->isWritable()) {
 				if ('.idea' == $file->getRelativePath()) {
-					$this->replaceContentIdeaOfFile($file, $bundleInfo, $filesystem);
+					$this->replaceContentIdeaOfFile($file, $bundleInfo);
 				} else {
-					$this->replaceContentOfFile($file, $bundleInfo, $filesystem);
+					$this->replaceContentOfFile($file, $bundleInfo);
 				}
 			}
 
@@ -137,15 +141,15 @@ EOF
 		return Command::SUCCESS;
 	}
 
-	private function replaceContentIdeaOfFile (SplFileInfo $file, BundleInfo $bundleInfo, Filesystem $filesystem): void
+	private function replaceContentIdeaOfFile (SplFileInfo $file, BundleInfo $bundleInfo): void
 	{
 		$content = $file->getContents();
 		$renameFile = $this->processIdeaFile($file, $content, $bundleInfo);
 
-		$this->saveFile($file, $renameFile, $content, $filesystem);
+		$this->saveFile($file, $renameFile, $content);
 	}
 
-	private function replaceContentOfFile (SplFileInfo $file, BundleInfo $bundleInfo, Filesystem $filesystem): void
+	private function replaceContentOfFile (SplFileInfo $file, BundleInfo $bundleInfo): void
 	{
 		$content = $file->getContents();
 
@@ -165,7 +169,7 @@ EOF
 
 		$renameFile = $this->processFile($file, $content, $bundleInfo);
 
-		$this->saveFile($file, $renameFile, $content, $filesystem);
+		$this->saveFile($file, $renameFile, $content);
 	}
 
 	private function processFile (SplFileInfo $file, string &$content, BundleInfo $bundleInfo): string
@@ -277,12 +281,12 @@ EOF
 		return $renameFile;
 	}
 
-	private function saveFile (SplFileInfo $file, string $renameFile, string $content, Filesystem $filesystem): void
+	private function saveFile (SplFileInfo $file, string $renameFile, string $content): void
 	{
-		$filesystem->dumpFile($file->getPathname(), $content);
+		$this->filesystem->dumpFile($file->getPathname(), $content);
 
 		if (!empty($renameFile)) {
-			$filesystem->rename($file->getPathname(), $renameFile, true);
+			$this->filesystem->rename($file->getPathname(), $renameFile, true);
 		}
 	}
 }
