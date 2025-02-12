@@ -43,7 +43,7 @@ final class CustomizeIdmBundleCommand extends BaseCommand
 	use RepositoryBundleTrait;
 	use SymfonyStyleTrait;
 
-	private readonly BundleInfo $bundle;
+	private BundleInfo $bundle;
 
 	protected function configure (): void
 	{
