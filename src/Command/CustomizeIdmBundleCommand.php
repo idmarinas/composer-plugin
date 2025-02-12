@@ -89,13 +89,12 @@ EOF
 
 			$this->bundle = new BundleInfo($namespace, $repository, $branch);
 
-			$bundleName = $this->bundle->getBundleName();
 			// Information
 			self::io()->title('Information of your Bundle');
-			self::io()->text('<fg=blue>Bundle name:</> ' . $bundleName);
-			self::io()->text('<fg=blue>Namespace:</> ' . $namespace);
-			self::io()->text('<fg=blue>Repository name:</> ' . $repository);
-			self::io()->text('<fg=blue>Branch:</> ' . $branch);
+			self::io()->text('<fg=blue>Bundle name:</> ' . $this->bundle->getBundleName());
+			self::io()->text('<fg=blue>Namespace:</> ' . $this->bundle->getNamespace());
+			self::io()->text('<fg=blue>Repository name:</> ' . $this->bundle->getRepository());
+			self::io()->text('<fg=blue>Branch:</> ' . $this->bundle->getBranch());
 
 			$answer = self::io()->confirm('Is this information correct?');
 		} while (!$answer);
@@ -137,7 +136,7 @@ EOF
 		}
 
 		// Finish progress
-		$progress->setMessage("<fg=green;bg=blue>\xF0\x9F\x97\xB8</> $bundleName ", 'title');
+		$progress->setMessage("<fg=green;bg=blue>\xF0\x9F\x97\xB8</> {$this->bundle->getBundleName()} ", 'title');
 		$progress->setMessage("<fg=bright-green;bg=bright-blue>\xF0\x9F\x97\xB9</> Customized successfully ");
 		$progress->finish();
 
