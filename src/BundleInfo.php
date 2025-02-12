@@ -95,6 +95,18 @@ final class BundleInfo
 		;
 	}
 
+	public function getProjectNameInitials (): string
+	{
+		$array = u($this->getProjectName())
+			->lower()
+			->split(' ')
+		;
+
+		$array = array_map(fn($value) => $value[0], $array);
+
+		return implode('', $array);
+	}
+
 	public function getDockerName (): string
 	{
 		return u($this->getRepositoryName())
