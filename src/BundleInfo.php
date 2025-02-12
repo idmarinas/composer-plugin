@@ -19,20 +19,24 @@
 
 namespace Idm\Composer\Plugin;
 
+use ReflectionClass;
 use function Symfony\Component\String\u;
 
 final readonly class BundleInfo
 {
+	private ReflectionClass $reflection;
+
 	public function __construct (
-		private string $bundleName,
 		private string $namespace,
 		private string $repository,
 		private string $branch,
-	) {}
+	) {
+		$this->reflection = new ReflectionClass(str_replace('/', '\\', $namespace));
+	}
 
 	public function getBundleName (): string
 	{
-		return $this->bundleName;
+		return $this->reflection->getShortName();
 	}
 
 	public function getNamespace (): string
@@ -62,11 +66,19 @@ final readonly class BundleInfo
 
 	public function getProjectName (): string
 	{
-		return u($this->bundleName)
+		return u($this->getBundleName())
 			->snake()
 			->replace('_', ' ')
 			->title(true)
 			->replace('Idm', 'IDMarinas')
+			->toString()
+		;
+	}
+
+	public function getDockerName (): string
+	{
+		return u($this->getRepositoryName())
+			->replace('-', '_')
 			->toString()
 		;
 	}
