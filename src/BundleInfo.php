@@ -24,17 +24,19 @@ use function Symfony\Component\String\u;
 final class BundleInfo
 {
 	private readonly string $fullClassName;
-//	private string          $repository;
-	private string $branch;
-	private string $repositoryVendor;
-	private string $repositoryName;
+	private string          $branch;
+	private string          $repositoryVendor;
+	private string          $repositoryName;
 
 	public function __construct (string $namespace)
 	{
 		$this->fullClassName = str_replace('/', '\\', $namespace);
 		$this->repositoryVendor = u($this->fullClassName)->before('\\')->replace('Idm', 'idmarinas')->toString();
-		$this->repositoryName = u($this->fullClassName)->afterLast('\\')->snake()->replace('_', '-')->toString();
-//		$this->repository = sprintf('%s/s%', $this->repositoryVendor, $this->repositoryName);
+		$this->repositoryName = u($this->fullClassName)
+			->afterLast('\\')->snake()
+			->replaceMatches('(_|idm_)', '-')->trim('-')
+			->toString()
+		;
 	}
 
 	public function getBundleName (): string
