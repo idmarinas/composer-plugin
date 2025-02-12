@@ -44,6 +44,16 @@ final readonly class BundleInfo
 		return $this->repository;
 	}
 
+	public function getRepositoryVendor (): string
+	{
+		return u($this->repository)->before('/')->toString();
+	}
+
+	public function getRepositoryName (): string
+	{
+		return u($this->repository)->after('/')->toString();
+	}
+
 	public function getProjectName (): string
 	{
 		return u($this->bundleName)
