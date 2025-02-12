@@ -102,7 +102,7 @@ final class BundleInfo
 			->split(' ')
 		;
 
-		$array = array_map(fn($value) => $value[0], $array);
+		$array = array_map(fn($value) => $value->slice(0, 1)->toString(), $array);
 
 		return implode('', $array);
 	}
