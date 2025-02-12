@@ -43,12 +43,7 @@ final class CustomizeIdmBundleCommand extends BaseCommand
 	use RepositoryBundleTrait;
 	use SymfonyStyleTrait;
 
-	public function __construct (
-		?string             $name = null,
-		private ?BundleInfo $bundle = null
-	) {
-		parent::__construct($name);
-	}
+	private readonly BundleInfo $bundle;
 
 	protected function configure (): void
 	{
@@ -84,11 +79,13 @@ EOF
 
 		do {
 			$namespace = $this->namespaceBundle();
-			$repository = $this->repositoryBundle();
+			$this->bundle = new BundleInfo($namespace);
+			$repository = $this->repositoryBundle($this->bundle->getRepository());
 			$branch = $this->defaultBranch();
 
-			$this->bundle = new BundleInfo($namespace, $repository, $branch);
-
+			$this->bundle->setRepository($repository);
+			$this->bundle->setBranch($branch);
+			
 			// Information
 			self::io()->title('Information of your Bundle');
 			self::io()->text('<fg=blue>Bundle name:</> ' . $this->bundle->getBundleName());
@@ -159,7 +156,7 @@ EOF
 			->replaceMatches('/Copyright \d{4} (C)/', 'Copyright ' . date('Y') . ' (C)')
 			->replaceMatches('/@date +\d{2}\/\d{2}\/\d{4}/', '@date    ' . date('d/m/Y'))
 			->replaceMatches('/@time +\d{2}:\d{2}/', '@time    ' . date('H:i'))
-			->replace('Idm\Bundle\Template\IdmTemplateBundle', $this->bundle->getBundleClassName())
+			->replace('Idm\Bundle\Template\IdmTemplateBundle', $this->bundle->geFullClassName())
 			->replaceMatches('/(use|namespace) (Idm\\\Bundle\\\Template)(;|\\\)/', function ($match) {
 				return sprintf('%s %s%s', $match[1], $this->bundle->getNamespace(), $match[3]);
 			})
@@ -197,10 +194,10 @@ EOF
 				$manipulator->addSubNode('support', 'issues', $this->bundle->getGithubUrl() . '/issues');
 				$manipulator->addSubNode('autoload', 'psr-4', [$this->bundle->getAutoload() => 'src/']);
 				$manipulator->addSubNode('autoload-dev', 'psr-4', [
-					'App\\'                         => 'app/src/',
+					'App\\' => 'app/src/',
 					$this->bundle->getAutoloadDev() => 'tests/',
-					'DataFixtures\\'                => 'fixtures/',
-					'Factory\\'                     => 'factories/',
+					'DataFixtures\\' => 'fixtures/',
+					'Factory\\' => 'factories/',
 				]);
 				$manipulator->addConfigSetting('allow-plugins.idmarinas/composer-plugin', false);
 
@@ -235,7 +232,7 @@ EOF
 					$file = $file->current()->getContents();
 					$file = u($file)
 						->replace('<package-name>', $this->bundle->getRepository())
-						->replace('<vendor>\<bundle-name>\<bundle-long-name>', $this->bundle->getBundleClassName())
+						->replace('<vendor>\<bundle-name>\<bundle-long-name>', $this->bundle->geFullClassName())
 						->toString()
 					;
 					$content = u($content)
