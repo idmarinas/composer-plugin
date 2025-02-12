@@ -44,11 +44,13 @@ trait RepositoryBundleTrait
 			),
 			new Callback(function (mixed $value, ExecutionContextInterface $context) {
 				$name = 'idmarinas/idm-template-bundle';
-				if (strtolower($value) == $name) {
+				$nameAlt = 'idmarinas/template-bundle';
+				if (strtolower($value) == $name || strtolower($value) == $nameAlt) {
 					$context
-						->buildViolation('The repository "{{ value }}" not be equal to "{{ name }}".')
+						->buildViolation('The repository "{{ value }}" not be equal to "{{ name }} or {{ name_alt }}".')
 						->setParameter('{{ value }}', $value)
 						->setParameter('{{ name }}', $name)
+						->setParameter('{{ name_alt }}', $nameAlt)
 						->addViolation()
 					;
 				}
