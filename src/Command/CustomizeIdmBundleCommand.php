@@ -22,32 +22,31 @@ namespace Idm\Composer\Plugin\Command;
 use Composer\Command\BaseCommand;
 use Composer\Json\JsonManipulator;
 use Idm\Composer\Plugin\BundleInfo;
-use Idm\Composer\Plugin\Traits\Command\BundleNameTrait;
 use Idm\Composer\Plugin\Traits\Command\DefaultBranchTrait;
 use Idm\Composer\Plugin\Traits\Command\NamespaceBundleTrait;
-use Idm\Composer\Plugin\Traits\Command\ProgressBarTrait;
 use Idm\Composer\Plugin\Traits\Command\RepositoryBundleTrait;
+use Idm\Composer\Plugin\Traits\FilesystemTrait;
+use Idm\Composer\Plugin\Traits\SymfonyStyleTrait;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 use function Symfony\Component\String\u;
 
 final class CustomizeIdmBundleCommand extends BaseCommand
 {
 	use LockableTrait;
-	use BundleNameTrait;
 	use DefaultBranchTrait;
+	use FilesystemTrait;
 	use NamespaceBundleTrait;
-	use ProgressBarTrait;
 	use RepositoryBundleTrait;
+	use SymfonyStyleTrait;
 
-	public function __construct (?string $name = null, private readonly Filesystem $filesystem = new Filesystem())
-	{
+	public function __construct (
+		?string            $name = null,
+		private BundleInfo $bundle
+	) {
 		parent::__construct($name);
 	}
 
@@ -68,40 +67,42 @@ EOF
 
 	protected function execute (InputInterface $input, OutputInterface $output): int
 	{
-		$io = new SymfonyStyle($input, $output);
+		self::setInputOutput($input, $output);
 
 		if (!$this->lock()) {
-			$io->warning('The command is already running in another process.');
+			self::io()->warning('The command is already running in another process.');
 
 			return Command::SUCCESS;
 		}
 
 		if (!$input->isInteractive()) {
-			$io->warning('Please run this command in interactive mode.');
-			$io->note('If you want to change the namespace and other names for your bundle.');
+			self::io()->warning('Please run this command in interactive mode.');
+			self::io()->note('If you want to change the namespace and other names for your bundle.');
 
 			return Command::SUCCESS;
 		}
 
 		do {
-			$bundleName = $this->bundleName($io);
-			$namespace = $this->namespaceBundle($io);
-			$repository = $this->repositoryBundle($io);
-			$branch = $this->defaultBranch($io);
+			$namespace = $this->namespaceBundle();
+			$repository = $this->repositoryBundle();
+			$branch = $this->defaultBranch();
 
+			$this->bundle = new BundleInfo($namespace, $repository, $branch);
+
+			$bundleName = $this->bundle->getBundleName();
 			// Information
-			$io->title('Information of your Bundle');
-			$io->text('<fg=blue>Bundle name:</> ' . $bundleName);
-			$io->text('<fg=blue>Namespace:</> ' . $namespace);
-			$io->text('<fg=blue>Repository name:</> ' . $repository);
-			$io->text('<fg=blue>Branch:</> ' . $branch);
+			self::io()->title('Information of your Bundle');
+			self::io()->text('<fg=blue>Bundle name:</> ' . $bundleName);
+			self::io()->text('<fg=blue>Namespace:</> ' . $namespace);
+			self::io()->text('<fg=blue>Repository name:</> ' . $repository);
+			self::io()->text('<fg=blue>Branch:</> ' . $branch);
 
-			$answer = $io->confirm('Is this information correct?');
+			$answer = self::io()->confirm('Is this information correct?');
 		} while (!$answer);
 
 		$composer = $this->requireComposer(true, true);
 
-		$finder = (new Finder())
+		$finder = self::finder('files')
 			->in(dirname($composer->getConfig()->getConfigSource()->getName()))
 			->ignoreDotFiles(false)
 			->ignoreVCSIgnored(true)
@@ -114,12 +115,10 @@ EOF
 			->sortByName()
 		;
 
-		$progress = $this->getProgressBar($io);
+		$progress = self::getProgressBar();
 		$progress->setMessage('Preparing files...', 'title');
 		$progress->setMessage('Analyzing bundle files...');
 		$progress->start($finder->count());
-
-		$bundleInfo = new BundleInfo($bundleName, $namespace, $repository, $branch);
 
 		// Update files
 		foreach ($finder as $file) {
@@ -128,9 +127,9 @@ EOF
 
 			if ($file->isReadable() && $file->isWritable()) {
 				if ('.idea' == $file->getRelativePath()) {
-					$this->replaceContentIdeaOfFile($file, $bundleInfo);
+					$this->replaceContentIdeaOfFile($file);
 				} else {
-					$this->replaceContentOfFile($file, $bundleInfo);
+					$this->replaceContentOfFile($file);
 				}
 			}
 
@@ -145,15 +144,15 @@ EOF
 		return Command::SUCCESS;
 	}
 
-	private function replaceContentIdeaOfFile (SplFileInfo $file, BundleInfo $bundleInfo): void
+	private function replaceContentIdeaOfFile (SplFileInfo $file): void
 	{
 		$content = $file->getContents();
-		$renameFile = $this->processIdeaFile($file, $content, $bundleInfo);
+		$renameFile = $this->processIdeaFile($file, $content);
 
 		$this->saveFile($file, $renameFile, $content);
 	}
 
-	private function replaceContentOfFile (SplFileInfo $file, BundleInfo $bundleInfo): void
+	private function replaceContentOfFile (SplFileInfo $file): void
 	{
 		$content = $file->getContents();
 
@@ -161,45 +160,48 @@ EOF
 			->replaceMatches('/Copyright \d{4} (C)/', 'Copyright ' . date('Y') . ' (C)')
 			->replaceMatches('/@date +\d{2}\/\d{2}\/\d{4}/', '@date    ' . date('d/m/Y'))
 			->replaceMatches('/@time +\d{2}:\d{2}/', '@time    ' . date('H:i'))
-			->replace('Idm\Bundle\Template\IdmTemplateBundle', $bundleInfo->getBundleClassName())
-			->replaceMatches('/(use|namespace) (Idm\\\Bundle\\\Template)(;|\\\)/', function ($match) use ($bundleInfo) {
-				return sprintf('%s %s%s', $match[1], $bundleInfo->getNamespace(), $match[3]);
+			->replace('Idm\Bundle\Template\IdmTemplateBundle', $this->bundle->getBundleClassName())
+			->replaceMatches('/(use|namespace) (Idm\\\Bundle\\\Template)(;|\\\)/', function ($match) {
+				return sprintf('%s %s%s', $match[1], $this->bundle->getNamespace(), $match[3]);
 			})
-			->replace('Idm\Bundle\Template\\', $bundleInfo->getNamespace() . '\\')
-			->replaceMatches('/^(\X+)(IdmTemplateBundle)(\X+)$/', function ($match) use ($bundleInfo) {
-				return sprintf('%s%s%s', $match[1], $bundleInfo->getBundleName(), $match[3]);
+			->replace('Idm\Bundle\Template\\', $this->bundle->getNamespace() . '\\')
+			->replaceMatches('/^(\X+)(IdmTemplateBundle)(\X+)$/', function ($match) {
+				return sprintf('%s%s%s', $match[1], $this->bundle->getBundleName(), $match[3]);
 			})
-			->replace('name: template_bundle', 'name: ' . u($bundleInfo->getRepositoryName())->replace('-', '_')->toString())
+			->replace('name: template_bundle', 'name: ' . $this->bundle->getDockerName())
 			->toString()
 		;
 
-		$renameFile = $this->processFile($file, $content, $bundleInfo);
+		$renameFile = $this->processFile($file, $content);
 
 		$this->saveFile($file, $renameFile, $content);
 	}
 
-	private function processFile (SplFileInfo $file, string &$content, BundleInfo $bundleInfo): string
+	private function processFile (SplFileInfo $file, string &$content): string
 	{
 		$renameFile = '';
 
 		switch ($file->getFilename()) {
 			case 'IdmTemplateBundle.php':
-				$renameFile = u($file->getPathname())->replace('IdmTemplateBundle', $bundleInfo->getBundleName())->toString();
-				$content = u($content)->replace('class IdmTemplateBundle', 'class ' . $bundleInfo->getBundleName())->toString();
+				$renameFile = u($file->getPathname())->replace('IdmTemplateBundle', $this->bundle->getBundleName())->toString();
+				$content = u($content)
+					->replace('class IdmTemplateBundle', 'class ' . $this->bundle->getBundleName())
+					->toString()
+				;
 				break;
 			case 'composer.json':
 				$manipulator = new JsonManipulator($content);
 				$manipulator->addMainKey('type', 'symfony-bundle');
-				$manipulator->addMainKey('name', $bundleInfo->getRepository());
-				$manipulator->addMainKey('homepage', $bundleInfo->getGithubUrl());
+				$manipulator->addMainKey('name', $this->bundle->getRepository());
+				$manipulator->addMainKey('homepage', $this->bundle->getGithubUrl());
 				$manipulator->addMainKey('keywords', ['symfony-bundle']);
-				$manipulator->addSubNode('support', 'issues', $bundleInfo->getGithubUrl() . '/issues');
-				$manipulator->addSubNode('autoload', 'psr-4', [$bundleInfo->getAutoload() => 'src/']);
+				$manipulator->addSubNode('support', 'issues', $this->bundle->getGithubUrl() . '/issues');
+				$manipulator->addSubNode('autoload', 'psr-4', [$this->bundle->getAutoload() => 'src/']);
 				$manipulator->addSubNode('autoload-dev', 'psr-4', [
-					'App\\' => 'app/src/',
-					$bundleInfo->getAutoloadDev() => 'tests/',
-					'DataFixtures\\' => 'fixtures/',
-					'Factory\\' => 'factories/',
+					'App\\'                         => 'app/src/',
+					$this->bundle->getAutoloadDev() => 'tests/',
+					'DataFixtures\\'                => 'fixtures/',
+					'Factory\\'                     => 'factories/',
 				]);
 				$manipulator->addConfigSetting('allow-plugins.idmarinas/composer-plugin', false);
 
@@ -208,7 +210,7 @@ EOF
 			case 'phpunit.xml.dist':
 			case 'phpunit.xml':
 				$content = u($content)
-					->replace('IDMarinas Template Bundle Test Suite', $bundleInfo->getTestSuite())
+					->replace('IDMarinas Template Bundle Test Suite', $this->bundle->getTestSuite())
 					->toString()
 				;
 				break;
@@ -216,13 +218,13 @@ EOF
 				$content = u($content)
 					->replaceMatches(
 						'/###(<|>) idmarinas\/(|idm-)template-bundle ###/',
-						fn($match) => sprintf('###%s %s ###', $match[1], $bundleInfo->getRepository())
+						fn($match) => sprintf('###%s %s ###', $match[1], $this->bundle->getRepository())
 					)
 					->toString()
 				;
 				break;
 			case 'README.md':
-				$finder = (new Finder())
+				$finder = self::finder('readme')
 					->in(dirname(__DIR__, 2) . '/templates')
 					->files()
 					->name('readme.tpl.md')
@@ -233,18 +235,18 @@ EOF
 					$file->rewind();
 					$file = $file->current()->getContents();
 					$file = u($file)
-						->replace('<package-name>', $bundleInfo->getRepository())
-						->replace('<vendor>\<bundle-name>\<bundle-long-name>', $bundleInfo->getBundleClassName())
+						->replace('<package-name>', $this->bundle->getRepository())
+						->replace('<vendor>\<bundle-name>\<bundle-long-name>', $this->bundle->getBundleClassName())
 						->toString()
 					;
 					$content = u($content)
 						->replaceMatches('/<!-- readme-template -->(?s:.)+<!-- readme-template -->/', $file)
-						->replaceMatches('/idmarinas\/(|idm-)template-bundle/', $bundleInfo->getRepository())
-						->replace('idmarinas/REPOSITORY_NAME_CHANGE_ME', $bundleInfo->getRepository())
-						->replace('SONAR_PROJECT_NAME_CHANGE_ME', u($bundleInfo->getRepository())->replace('/', '_')->toString())
-						->replace('# IDMarinas Template Bundle', '# ' . $bundleInfo->getProjectName())
-						->replace('BRANCH_MASTER', $bundleInfo->getBranch())
-						->replace('master', $bundleInfo->getBranch())
+						->replaceMatches('/idmarinas\/(|idm-)template-bundle/', $this->bundle->getRepository())
+						->replace('idmarinas/REPOSITORY_NAME_CHANGE_ME', $this->bundle->getRepository())
+						->replace('SONAR_PROJECT_NAME_CHANGE_ME', u($this->bundle->getRepository())->replace('/', '_')->toString())
+						->replace('# IDMarinas Template Bundle', '# ' . $this->bundle->getProjectName())
+						->replace('BRANCH_MASTER', $this->bundle->getBranch())
+						->replace('master', $this->bundle->getBranch())
 						->toString()
 					;
 				}
@@ -254,24 +256,24 @@ EOF
 		return $renameFile;
 	}
 
-	private function processIdeaFile (SplFileInfo $file, string &$content, BundleInfo $bundleInfo): string
+	private function processIdeaFile (SplFileInfo $file, string &$content): string
 	{
 		$renameFile = '';
 
 		switch ($file->getFilename()) {
 			case '.name':
-				$content = u($content)->replace('IDMarinas Template Bundle', $bundleInfo->getProjectName())->toString();
+				$content = u($content)->replace('IDMarinas Template Bundle', $this->bundle->getProjectName())->toString();
 				break;
 			case 'IDMarinas Template Bundle.iml':
 				$renameFile = u($file->getPathname())
-					->replace('IDMarinas Template Bundle', $bundleInfo->getProjectName())
+					->replace('IDMarinas Template Bundle', $this->bundle->getProjectName())
 					->toString()
 				;
 				break;
 			case 'Default.xml':
 				if (u($file->getPathname())->containsAny('copyright')) {
 					$content = u($content)
-						->replaceMatches('/https:\/\/github.com\/idmarinas\/(|idm-)template-bundle/', $bundleInfo->getGithubUrl())
+						->replaceMatches('/https:\/\/github.com\/idmarinas\/(|idm-)template-bundle/', $this->bundle->getGithubUrl())
 						->replaceMatches('/Copyright \d{4} (C)/', 'Copyright ' . date('Y') . ' (C)')
 						->replaceMatches('/@date +\d{2}\/\d{2}\/\d{2}/', '@date    ' . date('d/m/Y'))
 						->replaceMatches('/@time +\d{2}:\d{2}/', '@time    ' . date('H:i'))
@@ -281,7 +283,7 @@ EOF
 				break;
 			case 'modules.xml':
 				$content = u($content)
-					->replace('IDMarinas Template Bundle.iml', $bundleInfo->getProjectName() . '.iml')
+					->replace('IDMarinas Template Bundle.iml', $this->bundle->getProjectName() . '.iml')
 					->toString()
 				;
 				break;
@@ -292,10 +294,10 @@ EOF
 
 	private function saveFile (SplFileInfo $file, string $renameFile, string $content): void
 	{
-		$this->filesystem->dumpFile($file->getPathname(), $content);
+		self::filesystem()->dumpFile($file->getPathname(), $content);
 
 		if (!empty($renameFile)) {
-			$this->filesystem->rename($file->getPathname(), $renameFile, true);
+			self::filesystem()->rename($file->getPathname(), $renameFile, true);
 		}
 	}
 }
