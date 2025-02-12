@@ -152,6 +152,8 @@ EOF
 	{
 		$content = $file->getContents();
 
+		$renameFile = $this->processFile($file, $content);
+
 		$content = u($content)
 			->replaceMatches('/Copyright \d{4} (C)/', 'Copyright ' . date('Y') . ' (C)')
 			->replaceMatches('/@date +\d{2}\/\d{2}\/\d{4}/', '@date    ' . date('d/m/Y'))
@@ -167,8 +169,6 @@ EOF
 			->replace('idmarinas/template-bundle', $this->bundle->getRepository())
 			->toString()
 		;
-
-		$renameFile = $this->processFile($file, $content);
 
 		$this->saveFile($file, $renameFile, $content);
 	}
@@ -237,15 +237,34 @@ EOF
 					;
 					$content = u($content)
 						->replaceMatches('/<!-- readme-template -->(?s:.)+<!-- readme-template -->/', $file)
-						->replaceMatches('/idmarinas\/(|idm-)template-bundle/', $this->bundle->getRepository())
-						->replace('idmarinas/REPOSITORY_NAME_CHANGE_ME', $this->bundle->getRepository())
+						->replaceMatches(
+							'/idmarinas\/(|idm-)(template-bundle|REPOSITORY_NAME_CHANGE_ME)/',
+							$this->bundle->getRepository()
+						)
 						->replace('SONAR_PROJECT_NAME_CHANGE_ME', u($this->bundle->getRepository())->replace('/', '_')->toString())
-						->replace('# IDMarinas Template Bundle', '# ' . $this->bundle->getProjectName())
 						->replace('BRANCH_MASTER', $this->bundle->getBranch())
 						->replace('master', $this->bundle->getBranch())
 						->toString()
 					;
 				}
+				break;
+
+			case 'itb.tree':
+				$renameFile = u($file->getPathname())
+					->replace('itb.tree', $this->bundle->getProjectNameInitials() . '.tree')
+					->toString()
+				;
+				$content = u($content)
+					->replace('IDMarinas Template Bundle', $this->bundle->getProjectName())
+					->replace('id="itb"', sprintf('id="%s"', $this->bundle->getProjectNameInitials()))
+					->toString()
+				;
+				break;
+			case 'writerside.cfg':
+				$content = u($content)
+					->replace('src="itb.tree"', sprintf('src="%s.tree"', $this->bundle->getProjectNameInitials()))
+					->toString()
+				;
 				break;
 		}
 
