@@ -167,6 +167,10 @@ EOF
 			->replace('name: template_bundle', 'name: ' . $this->bundle->getDockerName())
 			->replace('IDMarinas Template Bundle', $this->bundle->getProjectName())
 			->replace('idmarinas/template-bundle', $this->bundle->getRepository())
+			->replace(
+				"INSTANCE: 'Writerside/itb'",
+				sprintf("INSTANCE: 'Writerside/%s'", $this->bundle->getProjectNameInitials())
+			)
 			->toString()
 		;
 
