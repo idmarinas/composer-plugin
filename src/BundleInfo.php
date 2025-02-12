@@ -19,49 +19,67 @@
 
 namespace Idm\Composer\Plugin;
 
-use ReflectionClass;
 use function Symfony\Component\String\u;
 
-final readonly class BundleInfo
+final class BundleInfo
 {
-	private ReflectionClass $reflection;
+	private readonly string $fullClassName;
+//	private string          $repository;
+	private string $branch;
+	private string $repositoryVendor;
+	private string $repositoryName;
 
-	public function __construct (
-		private string $namespace,
-		private string $repository,
-		private string $branch,
-	) {
-		$this->reflection = new ReflectionClass(str_replace('/', '\\', $this->namespace));
+	public function __construct (string $namespace)
+	{
+		$this->fullClassName = str_replace('/', '\\', $namespace);
+		$this->repositoryVendor = u($this->fullClassName)->before('\\')->replace('Idm', 'idmarinas')->toString();
+		$this->repositoryName = u($this->fullClassName)->afterLast('\\')->snake()->replace('_', '-')->toString();
+//		$this->repository = sprintf('%s/s%', $this->repositoryVendor, $this->repositoryName);
 	}
 
 	public function getBundleName (): string
 	{
-		return $this->reflection->getShortName();
+		return u($this->fullClassName)->afterLast('\\')->toString();
 	}
 
 	public function getNamespace (): string
 	{
-		return $this->reflection->getNamespaceName();
+		return u($this->fullClassName)->beforeLast('\\')->toString();
 	}
 
 	public function getRepository (): string
 	{
-		return $this->repository;
+		return sprintf('%s/s%', $this->getRepositoryVendor(), $this->getRepositoryName());
+	}
+
+	public function setRepository (string $repository): self
+	{
+		$this->repositoryVendor = u($repository)->before('/')->toString();
+		$this->repositoryName = u($repository)->afterLast('/')->toString();
+
+		return $this;
 	}
 
 	public function getRepositoryVendor (): string
 	{
-		return u($this->repository)->before('/')->toString();
+		return $this->repositoryVendor;
 	}
 
 	public function getRepositoryName (): string
 	{
-		return u($this->repository)->after('/')->toString();
+		return $this->repositoryName;
 	}
 
 	public function getBranch (): string
 	{
 		return $this->branch;
+	}
+
+	public function setBranch (string $branch): self
+	{
+		$this->branch = $branch;
+
+		return $this;
 	}
 
 	public function getProjectName (): string
@@ -83,9 +101,9 @@ final readonly class BundleInfo
 		;
 	}
 
-	public function getBundleClassName (): string
+	public function geFullClassName (): string
 	{
-		return $this->getNamespace() . '\\' . $this->getBundleName();
+		return $this->fullClassName;
 	}
 
 	public function getGithubUrl (): string
