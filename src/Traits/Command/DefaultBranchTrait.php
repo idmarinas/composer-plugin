@@ -19,7 +19,6 @@
 
 namespace Idm\Composer\Plugin\Traits\Command;
 
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Validator\Constraints\NoSuspiciousCharacters;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validation;
@@ -27,13 +26,13 @@ use Symfony\Component\Validator\Validation;
 trait DefaultBranchTrait
 {
 	/** @internal */
-	private function defaultBranch (SymfonyStyle $io): string
+	private function defaultBranch (): string
 	{
 		$validation = Validation::createCallable(
 			new NotBlank(allowNull: false),
 			new NoSuspiciousCharacters(),
 		);
 
-		return $io->ask('Default branch name of repository" to', 'master', $validation);
+		return self::io()->ask('Default branch name of repository" to', 'master', $validation);
 	}
 }

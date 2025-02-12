@@ -19,7 +19,6 @@
 
 namespace Idm\Composer\Plugin\Traits\Command;
 
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\NoSuspiciousCharacters;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -32,7 +31,7 @@ trait RepositoryBundleTrait
 	/**
 	 * Repository name
 	 */
-	private function repositoryBundle (SymfonyStyle $io): string
+	private function repositoryBundle (): string
 	{
 		//
 		$validation = Validation::createCallable(
@@ -56,8 +55,8 @@ trait RepositoryBundleTrait
 				}
 			}),
 		);
-		$io->note('Remember username/repository-name');
+		self::io()->note('Remember username/repository-name');
 
-		return $io->ask('Replace repository from "idmarinas/template-bundle" to', null, $validation);
+		return self::io()->ask('Replace repository from "idmarinas/template-bundle" to', null, $validation);
 	}
 }

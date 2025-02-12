@@ -19,26 +19,26 @@
 
 namespace Idm\Composer\Plugin\Traits\Command;
 
-use Symfony\Component\Console\Style\SymfonyStyle;
+use ReflectionClass;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\NoSuspiciousCharacters;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\Validation;
 
 trait NamespaceBundleTrait
 {
-
 	/**
-	 * Namespace for Bundle
+	 * (Namespace + Bundle Class Name) of the Bundle
 	 */
-	private function namespaceBundle (SymfonyStyle $io): string
+	private function namespaceBundle (): string
 	{
 		$validation = Validation::createCallable(
 			new NotBlank(allowNull: false),
 			new NoSuspiciousCharacters(),
 			new Callback(function (mixed $value, ExecutionContextInterface $context) {
-				$name = 'Idm\Bundle\Template';
+				$name = 'Idm\Bundle\Template\IdmTemplateBundle';
 				if (strtolower($value) == strtolower($name)) {
 					$context
 						->buildViolation('The namespace "{{ value }}" not be equal to "{{ name }}".')
@@ -47,9 +47,49 @@ trait NamespaceBundleTrait
 						->addViolation()
 					;
 				}
+				$reflection = new ReflectionClass($value);
+				$bundleClassName = $reflection->getShortName();
+
+				$validator = Validation::createValidator();
+				$validator
+					->inContext($context)
+					->validate($bundleClassName, [
+						new Callback(function (mixed $value, ExecutionContextInterface $context) {
+							$name = 'IdmTemplateBundle';
+							if (strtolower($value) == strtolower($name)) {
+								$context
+									->buildViolation('The bundle name "{{ value }}" not be equal to "{{ name }}".')
+									->setParameter('{{ value }}', $value)
+									->setParameter('{{ name }}', $name)
+									->addViolation()
+								;
+							}
+						}),
+						new Regex(
+							pattern: '/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/',
+							message: 'The bundle name "{{ value }}" contains invalid characters.'
+						),
+						new Regex(
+							pattern: '/^[a-zA-Z]+Bundle$/', message: 'The name of the bundle should be suffixed with "Bundle"'
+						),
+					])
+				;
 			}),
 		);
 
-		return $io->ask('Replace namespace from "Idm\Bundle\Template" to', null, $validation);
+		self::io()->note('Example:');
+		self::io()->table(
+			['Namespace', 'Bundle Class Name'],
+			[
+				['Idm\Bundle\Template', 'IdmTemplateBundle'],
+				['Acme\Bundle\BlogBundle', 'AcmeBlogBundle'],
+			]
+		);
+
+		return self::io()->ask(
+			'Replace Namespace/Bundle Class Name from "Idm\Bundle\Template\IdmTemplateBundle" to',
+			null,
+			$validation
+		);
 	}
 }
