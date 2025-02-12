@@ -164,6 +164,7 @@ EOF
 			})
 			->replace('Idm\Bundle\Template\\', $bundleInfo->getNamespace() . '\\')
 			->replace('(IdmTemplateBundle::class)', '(' . $bundleInfo->getBundleName() . '::class)')
+			->replace('name: template_bundle', 'name: ' . u($bundleInfo->getRepositoryName())->replace('-', '_')->toString())
 			->toString()
 		;
 
