@@ -44,8 +44,8 @@ final class CustomizeIdmBundleCommand extends BaseCommand
 	use SymfonyStyleTrait;
 
 	public function __construct (
-		?string            $name = null,
-		private BundleInfo $bundle
+		?string             $name = null,
+		private ?BundleInfo $bundle = null
 	) {
 		parent::__construct($name);
 	}
