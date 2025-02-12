@@ -32,10 +32,6 @@
 		"composer/composer": "^2.1",
 		"phpunit/phpunit": "^9.6"
 	},
-	"config": {
-		"optimize-autoloader": false,
-		"sort-packages": true
-	},
 	"autoload": {
 		"psr-4": {
 			"Idm\\Composer\\Plugin\\": "src/"
@@ -46,6 +42,16 @@
 			"Idm\\Composer\\Plugin\\Tests\\": "tests/"
 		}
 	},
+	"config": {
+		"allow-plugins": {
+			"composer/package-versions-deprecated": true
+		},
+		"optimize-autoloader": false,
+		"preferred-install": {
+			"*": "dist"
+		},
+		"sort-packages": true
+	},
 	"extra": {
 		"class": "Idm\\Composer\\Plugin\\Plugin",
 		"plugin-optional": true
@@ -54,6 +60,10 @@
 		{
 			"type": "paypal",
 			"url": "https://www.paypal.me/idmarinas"
+		},
+		{
+			"type": "github-sponsors",
+			"url": "https://github.com/sponsors/idmarinas"
 		}
 	]
 }
