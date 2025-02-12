@@ -119,7 +119,7 @@ EOF
 		$progress->setMessage('Analyzing bundle files...');
 		$progress->start($finder->count());
 
-		$bundleInfo = new BundleInfo($bundleName, $namespace, $repository);
+		$bundleInfo = new BundleInfo($bundleName, $namespace, $repository, $branch);
 
 		// Update files
 		foreach ($finder as $file) {
@@ -243,6 +243,8 @@ EOF
 						->replace('idmarinas/REPOSITORY_NAME_CHANGE_ME', $bundleInfo->getRepository())
 						->replace('SONAR_PROJECT_NAME_CHANGE_ME', u($bundleInfo->getRepository())->replace('/', '_')->toString())
 						->replace('# IDMarinas Template Bundle', '# ' . $bundleInfo->getProjectName())
+						->replace('BRANCH_MASTER', $bundleInfo->getBranch())
+						->replace('master', $bundleInfo->getBranch())
 						->toString()
 					;
 				}
