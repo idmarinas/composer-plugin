@@ -26,7 +26,8 @@ final readonly class BundleInfo
 	public function __construct (
 		private string $bundleName,
 		private string $namespace,
-		private string $repository
+		private string $repository,
+		private string $branch,
 	) {}
 
 	public function getBundleName (): string
@@ -52,6 +53,11 @@ final readonly class BundleInfo
 	public function getRepositoryName (): string
 	{
 		return u($this->repository)->after('/')->toString();
+	}
+
+	public function getBranch (): string
+	{
+		return $this->branch;
 	}
 
 	public function getProjectName (): string
