@@ -166,7 +166,7 @@ EOF
 				return sprintf('%s %s%s', $match[1], $bundleInfo->getNamespace(), $match[3]);
 			})
 			->replace('Idm\Bundle\Template\\', $bundleInfo->getNamespace() . '\\')
-			->replaceMatches('/^(.+)(IdmTemplateBundle)(.+)$/', function ($match) use ($bundleInfo) {
+			->replaceMatches('/^(\X+)(IdmTemplateBundle)(\X+)$/', function ($match) use ($bundleInfo) {
 				return sprintf('%s%s%s', $match[1], $bundleInfo->getBundleName(), $match[3]);
 			})
 			->replace('name: template_bundle', 'name: ' . u($bundleInfo->getRepositoryName())->replace('-', '_')->toString())
