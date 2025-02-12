@@ -273,7 +273,10 @@ EOF
 			case 'Default.xml':
 				if (u($file->getPathname())->containsAny('copyright')) {
 					$content = u($content)
-						->replaceMatches('/https:\/\/github.com\/idmarinas\/(|idm-)template-bundle/', $this->bundle->getGithubUrl())
+						->replaceMatches(
+							'/(https:\/\/github.com\/idmarinas\/(|idm-)template-bundle)/',
+							$this->bundle->getGithubUrl()
+						)
 						->replaceMatches('/Copyright \d{4} (C)/', 'Copyright ' . date('Y') . ' (C)')
 						->replaceMatches('/@date +\d{2}\/\d{2}\/\d{2}/', '@date    ' . date('d/m/Y'))
 						->replaceMatches('/@time +\d{2}:\d{2}/', '@time    ' . date('H:i'))
