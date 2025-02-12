@@ -157,13 +157,14 @@ EOF
 			->replaceMatches('/Copyright \d{4} (C)/', 'Copyright ' . date('Y') . ' (C)')
 			->replaceMatches('/@date +\d{2}\/\d{2}\/\d{4}/', '@date    ' . date('d/m/Y'))
 			->replaceMatches('/@time +\d{2}:\d{2}/', '@time    ' . date('H:i'))
-			->replace('use Idm\Bundle\Template\IdmTemplateBundle;', 'use ' . $bundleInfo->getBundleClassName() . ';')
-			->replace('new IdmTemplateBundle();', 'new ' . $bundleInfo->getBundleName() . '();')
+			->replace('Idm\Bundle\Template\IdmTemplateBundle', $bundleInfo->getBundleClassName())
 			->replaceMatches('/(use|namespace) (Idm\\\Bundle\\\Template)(;|\\\)/', function ($match) use ($bundleInfo) {
 				return sprintf('%s %s%s', $match[1], $bundleInfo->getNamespace(), $match[3]);
 			})
 			->replace('Idm\Bundle\Template\\', $bundleInfo->getNamespace() . '\\')
-			->replace('(IdmTemplateBundle::class)', '(' . $bundleInfo->getBundleName() . '::class)')
+			->replaceMatches('/^(.+)(IdmTemplateBundle)(.+)$/', function ($match) use ($bundleInfo) {
+				return sprintf('%s%s%s', $match[1], $bundleInfo->getBundleName(), $match[3]);
+			})
 			->replace('name: template_bundle', 'name: ' . u($bundleInfo->getRepositoryName())->replace('-', '_')->toString())
 			->toString()
 		;
