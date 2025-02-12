@@ -154,7 +154,7 @@ EOF
 		$content = $file->getContents();
 
 		$content = u($content)
-			->replaceMatches('/Copyright \d+ (C)/', 'Copyright ' . date('Y') . ' (C)')
+			->replaceMatches('/Copyright \d{4} (C)/', 'Copyright ' . date('Y') . ' (C)')
 			->replaceMatches('/@date +\d{2}\/\d{2}\/\d{2}/', '@date    ' . date('d/m/Y'))
 			->replaceMatches('/@time +\d{2}:\d{2}/', '@time    ' . date('H:i'))
 			->replace('use Idm\Bundle\Template\IdmTemplateBundle;', 'use ' . $bundleInfo->getBundleClassName() . ';')
@@ -178,7 +178,7 @@ EOF
 
 		switch ($file->getFilename()) {
 			case 'IdmTemplateBundle.php':
-				$renameFile = str_replace('IdmTemplateBundle', $bundleInfo->getBundleName(), $file->getPathname());
+				$renameFile = u($file->getPathname())->replace('IdmTemplateBundle', $bundleInfo->getBundleName())->toString();
 				$content = u($content)->replace('class IdmTemplateBundle', 'class ' . $bundleInfo->getBundleName())->toString();
 				break;
 			case 'composer.json':
@@ -209,7 +209,7 @@ EOF
 			case '.gitignore':
 				$content = u($content)
 					->replaceMatches(
-						'/###(<|>) idmarinas\/(idm-|)template-bundle ###/',
+						'/###(<|>) idmarinas\/(|idm-)template-bundle ###/',
 						fn($match) => sprintf('###%s %s ###', $match[1], $bundleInfo->getRepository())
 					)
 					->toString()
@@ -233,8 +233,9 @@ EOF
 					;
 					$content = u($content)
 						->replaceMatches('/<!-- readme-template -->(?s:.)+<!-- readme-template -->/', $file)
-						->replace('idmarinas/template-bundle', $bundleInfo->getRepository())
+						->replaceMatches('/idmarinas\/(|idm-)template-bundle/', $bundleInfo->getRepository())
 						->replace('idmarinas/REPOSITORY_NAME_CHANGE_ME', $bundleInfo->getRepository())
+						->replace('SONAR_PROJECT_NAME_CHANGE_ME', u($bundleInfo->getRepository())->replace('/', '_')->toString())
 						->replace('# IDMarinas Template Bundle', '# ' . $bundleInfo->getProjectName())
 						->toString()
 					;
@@ -262,8 +263,8 @@ EOF
 			case 'Default.xml':
 				if (u($file->getPathname())->containsAny('copyright')) {
 					$content = u($content)
-						->replace('https://github.com/idmarinas/idm-template-bundle', $bundleInfo->getGithubUrl())
-						->replaceMatches('/Copyright \d+ (C)/', 'Copyright ' . date('Y') . ' (C)')
+						->replaceMatches('/https:\/\/github.com\/idmarinas\/(|idm-)template-bundle/', $bundleInfo->getGithubUrl())
+						->replaceMatches('/Copyright \d{4} (C)/', 'Copyright ' . date('Y') . ' (C)')
 						->replaceMatches('/@date +\d{2}\/\d{2}\/\d{2}/', '@date    ' . date('d/m/Y'))
 						->replaceMatches('/@time +\d{2}:\d{2}/', '@time    ' . date('H:i'))
 						->toString()
