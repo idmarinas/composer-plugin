@@ -155,7 +155,7 @@ EOF
 
 		$content = u($content)
 			->replaceMatches('/Copyright \d{4} (C)/', 'Copyright ' . date('Y') . ' (C)')
-			->replaceMatches('/@date +\d{2}\/\d{2}\/\d{2}/', '@date    ' . date('d/m/Y'))
+			->replaceMatches('/@date +\d{2}\/\d{2}\/\d{4}/', '@date    ' . date('d/m/Y'))
 			->replaceMatches('/@time +\d{2}:\d{2}/', '@time    ' . date('H:i'))
 			->replace('use Idm\Bundle\Template\IdmTemplateBundle;', 'use ' . $bundleInfo->getBundleClassName() . ';')
 			->replace('new IdmTemplateBundle();', 'new ' . $bundleInfo->getBundleName() . '();')
