@@ -31,7 +31,7 @@ final readonly class BundleInfo
 		private string $repository,
 		private string $branch,
 	) {
-		$this->reflection = new ReflectionClass(str_replace('/', '\\', $namespace));
+		$this->reflection = new ReflectionClass(str_replace('/', '\\', $this->namespace));
 	}
 
 	public function getBundleName (): string
@@ -41,7 +41,7 @@ final readonly class BundleInfo
 
 	public function getNamespace (): string
 	{
-		return str_replace('/', '\\', $this->namespace);
+		return $this->reflection->getNamespaceName();
 	}
 
 	public function getRepository (): string
