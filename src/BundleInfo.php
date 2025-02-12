@@ -49,7 +49,7 @@ final class BundleInfo
 
 	public function getRepository (): string
 	{
-		return sprintf('%s/s%', $this->getRepositoryVendor(), $this->getRepositoryName());
+		return sprintf('%s/%s', $this->getRepositoryVendor(), $this->getRepositoryName());
 	}
 
 	public function setRepository (string $repository): self
