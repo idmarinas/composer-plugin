@@ -19,13 +19,13 @@
 
 namespace Idm\Composer\Plugin\Traits\Command;
 
-use ReflectionClass;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\NoSuspiciousCharacters;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\Validation;
+use function Symfony\Component\String\u;
 
 trait NamespaceBundleTrait
 {
@@ -38,6 +38,7 @@ trait NamespaceBundleTrait
 			new NotBlank(allowNull: false),
 			new NoSuspiciousCharacters(),
 			new Callback(function (mixed $value, ExecutionContextInterface $context) {
+				$value = str_replace('/', '\\', $value);
 				$name = 'Idm\Bundle\Template\IdmTemplateBundle';
 				if (strtolower($value) == strtolower($name)) {
 					$context
@@ -47,8 +48,11 @@ trait NamespaceBundleTrait
 						->addViolation()
 					;
 				}
-				$reflection = new ReflectionClass($value);
-				$bundleClassName = $reflection->getShortName();
+
+				$bundleClassName = u($value)
+					->afterLast('\\')
+					->toString()
+				;
 
 				$validator = Validation::createValidator();
 				$validator
