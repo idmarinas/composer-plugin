@@ -23,6 +23,7 @@ use Composer\Command\BaseCommand;
 use Composer\Json\JsonManipulator;
 use Idm\Composer\Plugin\BundleInfo;
 use Idm\Composer\Plugin\Traits\Command\BundleNameTrait;
+use Idm\Composer\Plugin\Traits\Command\DefaultBranchTrait;
 use Idm\Composer\Plugin\Traits\Command\NamespaceBundleTrait;
 use Idm\Composer\Plugin\Traits\Command\ProgressBarTrait;
 use Idm\Composer\Plugin\Traits\Command\RepositoryBundleTrait;
@@ -40,6 +41,7 @@ final class CustomizeIdmBundleCommand extends BaseCommand
 {
 	use LockableTrait;
 	use BundleNameTrait;
+	use DefaultBranchTrait;
 	use NamespaceBundleTrait;
 	use ProgressBarTrait;
 	use RepositoryBundleTrait;
@@ -85,12 +87,14 @@ EOF
 			$bundleName = $this->bundleName($io);
 			$namespace = $this->namespaceBundle($io);
 			$repository = $this->repositoryBundle($io);
+			$branch = $this->defaultBranch($io);
 
 			// Information
 			$io->title('Information of your Bundle');
 			$io->text('<fg=blue>Bundle name:</> ' . $bundleName);
 			$io->text('<fg=blue>Namespace:</> ' . $namespace);
 			$io->text('<fg=blue>Repository name:</> ' . $repository);
+			$io->text('<fg=blue>Branch:</> ' . $branch);
 
 			$answer = $io->confirm('Is this information correct?');
 		} while (!$answer);
