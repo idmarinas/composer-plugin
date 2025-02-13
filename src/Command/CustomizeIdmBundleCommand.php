@@ -127,7 +127,7 @@ EOF
 			$progress->setMessage('Replacing information...');
 
 			if ($file->isReadable() && $file->isWritable()) {
-				if ('.idea' == $file->getRelativePath()) {
+				if (u($file->getRelativePath())->startsWith('.idea')) {
 					$this->replaceContentIdeaOfFile($file);
 				} else {
 					$this->replaceContentOfFile($file);
