@@ -161,8 +161,8 @@ EOF
 
 		$content = u($content)
 			->replaceMatches('/Copyright \d{4} (C)/', 'Copyright ' . date('Y') . ' (C)')
-			->replaceMatches('#@date( +)\d{2}/\d{2}/\d{4}#', '@date$1' . date('d/m/Y'))
-			->replaceMatches('/@time( +)\d{2}:\d{2}/', '@time$1' . date('H:i'))
+			->replaceMatches('#@date( +)\d{2}/\d{2}/\d{4}#', '@date${1}' . date('d/m/Y'))
+			->replaceMatches('/@time( +)\d{2}:\d{2}/', '@time${1}' . date('H:i'))
 			->replace('IDMarinas Template Bundle', $this->bundle->getProjectName())
 			->replace('Idm\Bundle\Template\IdmTemplateBundle', $this->bundle->geFullClassName())
 			->replace('Idm\Bundle\Template', $this->bundle->getNamespace())
@@ -176,7 +176,7 @@ EOF
 			->replace('SONAR_PROJECT_NAME_CHANGE_ME', u($this->bundle->getRepository())->replace('/', '_')->toString())
 			->replaceMatches(
 				'/(sonar.projectName=)(.*)/',
-				'$1' . u($this->bundle->getProjectName())->after(' ')->toString()
+				'${1}' . u($this->bundle->getProjectName())->after(' ')->toString()
 			)
 			->toString()
 		;
