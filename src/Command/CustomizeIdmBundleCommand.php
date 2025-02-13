@@ -156,20 +156,22 @@ EOF
 
 		$content = u($content)
 			->replaceMatches('/Copyright \d{4} (C)/', 'Copyright ' . date('Y') . ' (C)')
-			->replaceMatches('/@date +\d{2}\/\d{2}\/\d{4}/', '@date    ' . date('d/m/Y'))
-			->replaceMatches('/@time +\d{2}:\d{2}/', '@time    ' . date('H:i'))
-			->replace('Idm\Bundle\Template\IdmTemplateBundle', $this->bundle->geFullClassName())
-			->replaceMatches('/(use|namespace) (Idm\\\Bundle\\\Template)(;|\\\)/', function ($match) {
-				return sprintf('%s %s%s', $match[1], $this->bundle->getNamespace(), $match[3]);
-			})
-			->replace('Idm\Bundle\Template\\', $this->bundle->getNamespace() . '\\')
-			->replace('IdmTemplateBundle', $this->bundle->getBundleName())
-			->replace('name: template_bundle', 'name: ' . $this->bundle->getDockerName())
+			->replaceMatches('#@date( +)\d{2}/\d{2}/\d{4}#', '@date$1' . date('d/m/Y'))
+			->replaceMatches('/@time( +)\d{2}:\d{2}/', '@time$1' . date('H:i'))
 			->replace('IDMarinas Template Bundle', $this->bundle->getProjectName())
-			->replace('idmarinas/template-bundle', $this->bundle->getRepository())
+			->replace('Idm\Bundle\Template\IdmTemplateBundle', $this->bundle->geFullClassName())
+			->replace('Idm\Bundle\Template', $this->bundle->getNamespace())
+			->replace('IdmTemplateBundle', $this->bundle->getBundleName())
+			->replace('/idmarinas/(|idm-)template-bundle/', $this->bundle->getRepository())
+			->replace('name: template_bundle', 'name: ' . $this->bundle->getDockerName())
 			->replace(
 				"INSTANCE: 'Writerside/itb'",
 				sprintf("INSTANCE: 'Writerside/%s'", $this->bundle->getProjectNameInitials())
+			)
+			->replace('SONAR_PROJECT_NAME_CHANGE_ME', u($this->bundle->getRepository())->replace('/', '_')->toString())
+			->replace(
+				'sonar.projectName=Template Bundle',
+				'sonar.projectName=' . u($this->bundle->getProjectName())->after(' ')->toString()
 			)
 			->toString()
 		;
@@ -184,10 +186,6 @@ EOF
 		switch ($file->getFilename()) {
 			case 'IdmTemplateBundle.php':
 				$renameFile = u($file->getPathname())->replace('IdmTemplateBundle', $this->bundle->getBundleName())->toString();
-				$content = u($content)
-					->replace('class IdmTemplateBundle', 'class ' . $this->bundle->getBundleName())
-					->toString()
-				;
 				break;
 			case 'composer.json':
 				$manipulator = new JsonManipulator($content);
@@ -198,30 +196,14 @@ EOF
 				$manipulator->addSubNode('support', 'issues', $this->bundle->getGithubUrl() . '/issues');
 				$manipulator->addSubNode('autoload', 'psr-4', [$this->bundle->getAutoload() => 'src/']);
 				$manipulator->addSubNode('autoload-dev', 'psr-4', [
-					'App\\' => 'app/src/',
+					'App\\'                         => 'app/src/',
 					$this->bundle->getAutoloadDev() => 'tests/',
-					'DataFixtures\\' => 'fixtures/',
-					'Factory\\' => 'factories/',
+					'DataFixtures\\'                => 'fixtures/',
+					'Factory\\'                     => 'factories/',
 				]);
 				$manipulator->addConfigSetting('allow-plugins.idmarinas/composer-plugin', false);
 
 				$content = $manipulator->getContents();
-				break;
-			case 'phpunit.xml.dist':
-			case 'phpunit.xml':
-				$content = u($content)
-					->replace('IDMarinas Template Bundle Test Suite', $this->bundle->getTestSuite())
-					->toString()
-				;
-				break;
-			case '.gitignore':
-				$content = u($content)
-					->replaceMatches(
-						'/###(<|>) idmarinas\/(|idm-)template-bundle ###/',
-						fn($match) => sprintf('###%s %s ###', $match[1], $this->bundle->getRepository())
-					)
-					->toString()
-				;
 				break;
 			case 'README.md':
 				$finder = self::finder('readme')
@@ -241,11 +223,7 @@ EOF
 					;
 					$content = u($content)
 						->replaceMatches('/<!-- readme-template -->(?s:.)+<!-- readme-template -->/', $file)
-						->replaceMatches(
-							'/idmarinas\/(|idm-)(template-bundle|REPOSITORY_NAME_CHANGE_ME)/',
-							$this->bundle->getRepository()
-						)
-						->replace('SONAR_PROJECT_NAME_CHANGE_ME', u($this->bundle->getRepository())->replace('/', '_')->toString())
+						->replace('idmarinas/REPOSITORY_NAME_CHANGE_ME', $this->bundle->getRepository())
 						->replace('BRANCH_MASTER', $this->bundle->getBranch())
 						->replace('master', $this->bundle->getBranch())
 						->toString()
@@ -259,7 +237,6 @@ EOF
 					->toString()
 				;
 				$content = u($content)
-					->replace('IDMarinas Template Bundle', $this->bundle->getProjectName())
 					->replace('id="itb"', sprintf('id="%s"', $this->bundle->getProjectNameInitials()))
 					->toString()
 				;
@@ -299,13 +276,7 @@ EOF
 			case 'Default.xml':
 				if (u($file->getPathname())->containsAny('copyright')) {
 					$content = u($content)
-						->replaceMatches(
-							'/(https:\/\/github.com\/idmarinas\/(|idm-)template-bundle)/',
-							$this->bundle->getGithubUrl()
-						)
-						->replaceMatches('/Copyright \d{4} (C)/', 'Copyright ' . date('Y') . ' (C)')
-						->replaceMatches('/@date +\d{2}\/\d{2}\/\d{2}/', '@date    ' . date('d/m/Y'))
-						->replaceMatches('/@time +\d{2}:\d{2}/', '@time    ' . date('H:i'))
+						->replaceMatches('#(https://github\.com/idmarinas/(|idm-)template-bundle)#', $this->bundle->getGithubUrl())
 						->toString()
 					;
 				}
