@@ -111,6 +111,11 @@ EOF
 			->sortByName()
 		;
 
+		// Nothing is done if no files have been found.
+		if ($finder->count() < 0) {
+			return Command::SUCCESS;
+		}
+
 		$progress = self::getProgressBar();
 		$progress->setMessage('Preparing files...', 'title');
 		$progress->setMessage('Analyzing bundle files...');
