@@ -63,6 +63,8 @@ $ composer require --dev idmarinas/composer-plugin
 > [!NOTE]
 > By default, the plugin is already included in **IDMarinas Template Bundle**.
 
+# ⚙️ Configuration
+
 Then allow the `idmarinas/composer-plugin` plugin to run in your project:
 
 ```json
