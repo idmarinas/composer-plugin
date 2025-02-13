@@ -167,7 +167,7 @@ EOF
 			->replace('Idm\Bundle\Template\IdmTemplateBundle', $this->bundle->geFullClassName())
 			->replace('Idm\Bundle\Template', $this->bundle->getNamespace())
 			->replace('IdmTemplateBundle', $this->bundle->getBundleName())
-			->replace('/idmarinas/(|idm-)template-bundle/', $this->bundle->getRepository())
+			->replaceMatches('#idmarinas/(|idm-)template-bundle#', $this->bundle->getRepository())
 			->replace('name: template_bundle', 'name: ' . $this->bundle->getDockerName())
 			->replace(
 				"INSTANCE: 'Writerside/itb'",
