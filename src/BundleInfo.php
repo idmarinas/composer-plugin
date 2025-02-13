@@ -134,9 +134,4 @@ final class BundleInfo
 	{
 		return $this->getAutoload() . 'Tests\\';
 	}
-
-	public function getTestSuite (): string
-	{
-		return $this->getProjectName() . ' Test Suite';
-	}
 }
