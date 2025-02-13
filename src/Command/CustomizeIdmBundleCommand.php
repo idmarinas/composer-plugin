@@ -169,9 +169,9 @@ EOF
 				sprintf("INSTANCE: 'Writerside/%s'", $this->bundle->getProjectNameInitials())
 			)
 			->replace('SONAR_PROJECT_NAME_CHANGE_ME', u($this->bundle->getRepository())->replace('/', '_')->toString())
-			->replace(
-				'sonar.projectName=Template Bundle',
-				'sonar.projectName=' . u($this->bundle->getProjectName())->after(' ')->toString()
+			->replaceMatches(
+				'/(sonar.projectName=)(.*)/',
+				'$1' . u($this->bundle->getProjectName())->after(' ')->toString()
 			)
 			->toString()
 		;
