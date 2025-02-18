@@ -269,9 +269,6 @@ EOF
 		$renameFile = '';
 
 		switch ($file->getFilename()) {
-			case '.name':
-				$content = u($content)->replace('IDMarinas Template Bundle', $this->bundle->getProjectName())->toString();
-				break;
 			case 'IDMarinas Template Bundle.iml':
 				$renameFile = u($file->getPathname())
 					->replace('IDMarinas Template Bundle', $this->bundle->getProjectName())
@@ -289,6 +286,12 @@ EOF
 			case 'modules.xml':
 				$content = u($content)
 					->replace('IDMarinas Template Bundle.iml', $this->bundle->getProjectName() . '.iml')
+					->toString()
+				;
+				break;
+			default:
+				$content = u($content)
+					->replace('IDMarinas Template Bundle', $this->bundle->getProjectName())
 					->toString()
 				;
 				break;
