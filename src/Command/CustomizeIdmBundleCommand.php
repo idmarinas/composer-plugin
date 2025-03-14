@@ -178,6 +178,7 @@ EOF
 				'/(sonar.projectName=)(.*)/',
 				'${1}' . u($this->bundle->getProjectName())->after(' ')->toString()
 			)
+			->replace('[ master ]', "[ {$this->bundle->getBranch()} ]")
 			->toString()
 		;
 
