@@ -19,6 +19,7 @@
 
 namespace Idm\Composer\Plugin\Traits;
 
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -40,7 +41,7 @@ trait SymfonyStyleTrait
 		self::$output = $output;
 	}
 
-	public static function getProgressBar (int $int = 0)
+	public static function getProgressBar (int $int = 0): ProgressBar
 	{
 		$progress = self::io()->createProgressBar($int);
 		$progress->setFormat(
