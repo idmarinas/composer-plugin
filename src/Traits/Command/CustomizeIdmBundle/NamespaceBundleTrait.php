@@ -1,8 +1,8 @@
 <?php
 /**
- * Copyright 2024 (C) IDMarinas - All Rights Reserved
+ * Copyright 2024-2025 (C) IDMarinas - All Rights Reserved
  *
- * Last modified by "IDMarinas" on 15/12/2024, 22:23
+ * Last modified by "idmarinas" on 12/02/2025, 19:26
  *
  * @project IDMarinas Composer Plugin
  * @see     https://github.com/idmarinas/composer-plugin
@@ -17,7 +17,7 @@
  * @since   1.0.0
  */
 
-namespace Idm\Composer\Plugin\Traits\Command;
+namespace Idm\Composer\Plugin\Traits\Command\CustomizeIdmBundle;
 
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\NoSuspiciousCharacters;
