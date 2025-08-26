@@ -30,10 +30,4 @@ final class AppInfo extends AbstractInfo
 	{
 		return parent::getProjectName($this->repositoryName);
 	}
-
-	public function getBranch (): string
-	{
-		return '1.x';
-	}
-
 }
