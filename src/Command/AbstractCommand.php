@@ -77,7 +77,7 @@ abstract class AbstractCommand extends BaseCommand
 			case 'IDMarinas Template Bundle.iml':
 			case 'IDMarinas Template Symfony.iml':
 				$renameFile = u($file->getPathname())
-					->replaceMatches('IDMarinas Template (Symfony|Bundle)', $this->info->getProjectName())
+					->replaceMatches('/IDMarinas Template \b(?:Symfony|Bundle)\b/i', $this->info->getProjectName())
 					->toString()
 				;
 				break;
@@ -85,7 +85,7 @@ abstract class AbstractCommand extends BaseCommand
 				if (u($file->getPathname())->containsAny('copyright')) {
 					$content = u($content)
 						->replaceMatches(
-							'#(https://github\.com/idmarinas/(|idm-)template-(symfony|bundle))#',
+							'#(https://github\.com/idmarinas/\b(?:|idm-)\btemplate-\b(?:symfony|bundle)\b)#i',
 							$this->info->getGithubUrl()
 						)
 						->toString()
@@ -94,13 +94,13 @@ abstract class AbstractCommand extends BaseCommand
 				break;
 			case 'modules.xml':
 				$content = u($content)
-					->replaceMatches('/IDMarinas Template \b(Symfony|Bundle)\b\.iml/', $this->info->getProjectName() . '.iml')
+					->replaceMatches('/IDMarinas Template \b(?:Symfony|Bundle)\b\.iml/i', $this->info->getProjectName() . '.iml')
 					->toString()
 				;
 				break;
 			default:
 				$content = u($content)
-					->replaceMatches('/IDMarinas Template \b(Symfony|Bundle)\b/', $this->info->getProjectName())
+					->replaceMatches('/IDMarinas Template \b(?:Symfony|Bundle)\b/i', $this->info->getProjectName())
 					->toString()
 				;
 				break;
