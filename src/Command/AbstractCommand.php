@@ -94,13 +94,13 @@ abstract class AbstractCommand extends BaseCommand
 				break;
 			case 'modules.xml':
 				$content = u($content)
-					->replaceMatches('IDMarinas Template (Symfony|Bundle).iml', $this->info->getProjectName() . '.iml')
+					->replaceMatches('/IDMarinas Template \b(Symfony|Bundle)\b\.iml/', $this->info->getProjectName() . '.iml')
 					->toString()
 				;
 				break;
 			default:
 				$content = u($content)
-					->replaceMatches('IDMarinas Template (Symfony|Bundle)', $this->info->getProjectName())
+					->replaceMatches('/IDMarinas Template \b(Symfony|Bundle)\b/', $this->info->getProjectName())
 					->toString()
 				;
 				break;
