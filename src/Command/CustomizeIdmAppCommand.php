@@ -145,6 +145,7 @@ EOF
 				$manipulator = new JsonManipulator($content);
 				$manipulator->addMainKey('type', 'project');
 				$manipulator->removeMainKey('keywords');
+				$manipulator->addConfigSetting('allow-plugins.idmarinas/composer-plugin', true);
 
 				$content = $manipulator->getContents();
 				break;
