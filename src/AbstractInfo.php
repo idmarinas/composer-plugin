@@ -68,7 +68,7 @@ abstract class AbstractInfo
 			->snake()
 			->replace('_', ' ')
 			->title(true)
-			->replace('Idm', 'IDMarinas')
+			->replaceMatches('/\b(idm|idmarinas)\b/i', 'IDMarinas')
 			->toString()
 		;
 	}
