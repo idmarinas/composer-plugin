@@ -87,7 +87,7 @@ EOF
 
 			// Information
 			self::io()->title('Information of your App');
-			self::io()->text('<fg=blue>Title:</> ' . $this->info->getProjectName());
+			self::io()->text('<fg=blue>Project name:</> ' . $this->info->getProjectName());
 			self::io()->text('<fg=blue>Repository name:</> ' . $this->info->getRepository());
 			self::io()->text('<fg=blue>Branch name:</> ' . $this->info->getBranch());
 
@@ -140,7 +140,7 @@ EOF
 
 		switch ($file->getFilename()) {
 			case 'composer.json':
-				$content = parent::processFile($file, $content);
+				parent::processFile($file, $content);
 
 				$manipulator = new JsonManipulator($content);
 				$manipulator->addMainKey('type', 'project');
