@@ -22,7 +22,9 @@ declare(strict_types=1);
 namespace Idm\Composer\Plugin\Command;
 
 use Composer\Json\JsonManipulator;
+use Idm\Composer\Plugin\AbstractInfo;
 use Idm\Composer\Plugin\AppInfo;
+use Idm\Composer\Plugin\Traits\Command\CustomizeIdmBundle\DefaultBranchTrait;
 use Idm\Composer\Plugin\Traits\SymfonyStyleTrait;
 use Idm\Composer\Plugin\Traits\VendorRepositoryTrait;
 use Symfony\Component\Console\Command\Command;
@@ -34,11 +36,12 @@ use function Symfony\Component\String\u;
 
 final class CustomizeIdmAppCommand extends AbstractCommand
 {
+	use DefaultBranchTrait;
 	use LockableTrait;
 	use VendorRepositoryTrait;
 	use SymfonyStyleTrait;
 
-	private AppInfo $app;
+	protected AbstractInfo|AppInfo $info;
 
 	/**
 	 * @inheritDoc
@@ -77,13 +80,16 @@ EOF
 
 		do {
 			$repository = $this->repositoryApp();
-			$this->app = new AppInfo($repository);
+			$this->info = new AppInfo($repository);
+			$branch = $this->defaultBranch();
+
+			$this->info->setBranch($branch);
 
 			// Information
 			self::io()->title('Information of your App');
-			self::io()->text('<fg=blue>Title:</> ' . $this->app->getProjectName());
-			self::io()->text('<fg=blue>Owner name:</> ' . $this->app->getRepositoryVendor());
-			self::io()->text('<fg=blue>Repository name:</> ' . $this->app->getRepositoryName());
+			self::io()->text('<fg=blue>Title:</> ' . $this->info->getProjectName());
+			self::io()->text('<fg=blue>Repository name:</> ' . $this->info->getRepository());
+			self::io()->text('<fg=blue>Branch name:</> ' . $this->info->getBranch());
 
 			$answer = self::io()->confirm('Is this information correct?');
 		} while (!$answer);
@@ -113,7 +119,7 @@ EOF
 		$this->processFiles($finder, $progress);
 
 		// Finish progress
-		self::progressFinish($progress, $this->app->getProjectName());
+		self::progressFinish($progress, $this->info->getProjectName());
 
 		return Command::SUCCESS;
 	}
@@ -126,9 +132,9 @@ EOF
 			->replaceMatches('/Copyright \d{4} (C)/', 'Copyright ' . date('Y') . ' (C)')
 			->replaceMatches('#@date( +)\d{2}/\d{2}/\d{4}#', '@date${1}' . date('d/m/Y'))
 			->replaceMatches('/@time( +)\d{2}:\d{2}/', '@time${1}' . date('H:i'))
-			->replace('IDMarinas Template Symfony', $this->app->getProjectName())
-			->replaceMatches('#idmarinas/(|idm-)template-symfony#', $this->app->getRepository())
-			->replace('name: template_symfony', 'name: ' . $this->app->getDockerName())
+			->replace('IDMarinas Template Symfony', $this->info->getProjectName())
+			->replaceMatches('#idmarinas/(|idm-)template-symfony#', $this->info->getRepository())
+			->replace('name: template_symfony', 'name: ' . $this->info->getDockerName())
 			->toString()
 		;
 
