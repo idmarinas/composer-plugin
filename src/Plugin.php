@@ -24,6 +24,7 @@ use Composer\IO\IOInterface;
 use Composer\Plugin\Capability\CommandProvider;
 use Composer\Plugin\Capable;
 use Composer\Plugin\PluginInterface;
+use Idm\Composer\Plugin\Command\CustomizeIdmAppCommand;
 use Idm\Composer\Plugin\Command\CustomizeIdmBundleCommand;
 
 class Plugin implements PluginInterface, Capable, CommandProvider
@@ -38,6 +39,7 @@ class Plugin implements PluginInterface, Capable, CommandProvider
 	public function getCommands (): array
 	{
 		return [
+			new CustomizeIdmAppCommand(),
 			new CustomizeIdmBundleCommand(),
 		];
 	}
