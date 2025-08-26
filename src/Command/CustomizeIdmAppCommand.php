@@ -101,7 +101,7 @@ EOF
 			->ignoreDotFiles(false)
 			->ignoreVCSIgnored(true)
 			->ignoreUnreadableDirs()
-			->exclude(['bundles', 'docs', '.docker', '.deployer'])
+			->exclude(['bundles', 'docs', '.docker'])
 			->notName(['.editorconfig', '.gitkeep'])
 			->files()
 			->sortByName()
