@@ -125,9 +125,8 @@ abstract class AbstractCommand extends BaseCommand
 				break;
 			case 'README.md':
 				$content = u($content)
-					->replace('idmarinas/REPOSITORY_NAME_CHANGE_ME', $this->info->getRepository())
-					->replace('BRANCH_MASTER', $this->info->getBranch())
-					->replace('master', $this->info->getBranch())
+					->replaceMatches('/\bREPOSITORY_NAME_CHANGE_ME\b/', $this->info->getRepositoryName())
+					->replaceMatches('/\b(?:BRANCH_MASTER|master)\b/i', $this->info->getBranch())
 					->toString()
 				;
 				break;
