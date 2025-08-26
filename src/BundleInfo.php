@@ -21,12 +21,10 @@ namespace Idm\Composer\Plugin;
 
 use function Symfony\Component\String\u;
 
-final class BundleInfo
+final class BundleInfo extends AbstractInfo
 {
 	private readonly string $fullClassName;
 	private string          $branch;
-	private string          $repositoryVendor;
-	private string          $repositoryName;
 
 	public function __construct (string $namespace)
 	{
@@ -49,29 +47,6 @@ final class BundleInfo
 		return u($this->fullClassName)->beforeLast('\\')->toString();
 	}
 
-	public function getRepository (): string
-	{
-		return sprintf('%s/%s', $this->getRepositoryVendor(), $this->getRepositoryName());
-	}
-
-	public function setRepository (string $repository): self
-	{
-		$this->repositoryVendor = u($repository)->before('/')->toString();
-		$this->repositoryName = u($repository)->afterLast('/')->toString();
-
-		return $this;
-	}
-
-	public function getRepositoryVendor (): string
-	{
-		return $this->repositoryVendor;
-	}
-
-	public function getRepositoryName (): string
-	{
-		return $this->repositoryName;
-	}
-
 	public function getBranch (): string
 	{
 		return $this->branch;
@@ -84,15 +59,9 @@ final class BundleInfo
 		return $this;
 	}
 
-	public function getProjectName (): string
+	public function getProjectName (string $name = ''): string
 	{
-		return u($this->getBundleName())
-			->snake()
-			->replace('_', ' ')
-			->title(true)
-			->replace('Idm', 'IDMarinas')
-			->toString()
-		;
+		return parent::getProjectName($this->getBundleName());
 	}
 
 	public function getProjectNameInitials (): string
@@ -107,22 +76,9 @@ final class BundleInfo
 		return implode('', $array);
 	}
 
-	public function getDockerName (): string
-	{
-		return u($this->getRepositoryName())
-			->replace('-', '_')
-			->toString()
-		;
-	}
-
 	public function geFullClassName (): string
 	{
 		return $this->fullClassName;
-	}
-
-	public function getGithubUrl (): string
-	{
-		return 'https://github.com/' . $this->getRepository();
 	}
 
 	public function getAutoload (): string
