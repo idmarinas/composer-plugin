@@ -108,7 +108,7 @@ EOF
 		;
 
 		// Nothing is done if no files have been found.
-		if ($finder->hasResults()) {
+		if (!$finder->hasResults()) {
 			return Command::SUCCESS;
 		}
 
