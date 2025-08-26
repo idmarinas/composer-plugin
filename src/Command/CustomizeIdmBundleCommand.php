@@ -24,9 +24,9 @@ use Composer\Json\JsonManipulator;
 use Idm\Composer\Plugin\BundleInfo;
 use Idm\Composer\Plugin\Traits\Command\CustomizeIdmBundle\DefaultBranchTrait;
 use Idm\Composer\Plugin\Traits\Command\CustomizeIdmBundle\NamespaceBundleTrait;
-use Idm\Composer\Plugin\Traits\Command\CustomizeIdmBundle\RepositoryBundleTrait;
 use Idm\Composer\Plugin\Traits\FilesystemTrait;
 use Idm\Composer\Plugin\Traits\SymfonyStyleTrait;
+use Idm\Composer\Plugin\Traits\VendorRepositoryTrait;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
@@ -40,7 +40,7 @@ final class CustomizeIdmBundleCommand extends BaseCommand
 	use DefaultBranchTrait;
 	use FilesystemTrait;
 	use NamespaceBundleTrait;
-	use RepositoryBundleTrait;
+	use VendorRepositoryTrait;
 	use SymfonyStyleTrait;
 
 	private BundleInfo $bundle;
