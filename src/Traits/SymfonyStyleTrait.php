@@ -57,6 +57,20 @@ trait SymfonyStyleTrait
 		return $progress;
 	}
 
+	public static function progressStart (ProgressBar $progress, int $start): void
+	{
+		$progress->setMessage('Preparing files...', 'title');
+		$progress->setMessage('Analyzing files...');
+		$progress->start($start);
+	}
+
+	public static function progressFinish (ProgressBar $progress, string $name): void
+	{
+		$progress->setMessage("<fg=green;bg=blue>\xF0\x9F\x97\xB8</> {$name} ", 'title');
+		$progress->setMessage("<fg=bright-green;bg=bright-blue>\xF0\x9F\x97\xB9</> Customized successfully ");
+		$progress->finish();
+	}
+
 	private static function getSymfonyStyle (): SymfonyStyle
 	{
 		if (!isset(self::$symfonyStyle) || !self::$symfonyStyle instanceof SymfonyStyle) {
