@@ -102,7 +102,7 @@ EOF
 			->ignoreVCSIgnored(true)
 			->ignoreUnreadableDirs()
 			->exclude(['bundles', 'docs', '.docker'])
-			->notName(['.editorconfig', '.gitkeep'])
+			->notName(['.editorconfig', '.gitkeep', '*.webp', '*.png', '*.jpg', '*.jpeg', '*.gif', '*.svg', '*.ico',])
 			->files()
 			->sortByName()
 		;
