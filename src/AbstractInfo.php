@@ -25,6 +25,7 @@ abstract class AbstractInfo
 {
 	protected string $repositoryVendor;
 	protected string $repositoryName;
+	protected string $branch;
 
 	public function getRepository (): string
 	{
@@ -47,6 +48,18 @@ abstract class AbstractInfo
 	public function getRepositoryName (): string
 	{
 		return $this->repositoryName;
+	}
+
+	public function getBranch (): string
+	{
+		return $this->branch;
+	}
+
+	public function setBranch (string $branch): self
+	{
+		$this->branch = $branch;
+
+		return $this;
 	}
 
 	public function getProjectName (string $name): string

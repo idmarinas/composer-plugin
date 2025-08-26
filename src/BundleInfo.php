@@ -24,7 +24,6 @@ use function Symfony\Component\String\u;
 final class BundleInfo extends AbstractInfo
 {
 	private readonly string $fullClassName;
-	private string          $branch;
 
 	public function __construct (string $namespace)
 	{
@@ -45,18 +44,6 @@ final class BundleInfo extends AbstractInfo
 	public function getNamespace (): string
 	{
 		return u($this->fullClassName)->beforeLast('\\')->toString();
-	}
-
-	public function getBranch (): string
-	{
-		return $this->branch;
-	}
-
-	public function setBranch (string $branch): self
-	{
-		$this->branch = $branch;
-
-		return $this;
 	}
 
 	public function getProjectName (string $name = ''): string
