@@ -33,6 +33,6 @@ trait DefaultBranchTrait
 			new NoSuspiciousCharacters(),
 		);
 
-		return self::io()->ask('Default branch name of repository" to', '1.x', $validation);
+		return self::io()->ask('Default branch name of repository to', '1.x', $validation);
 	}
 }
