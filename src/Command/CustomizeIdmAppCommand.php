@@ -24,6 +24,7 @@ namespace Idm\Composer\Plugin\Command;
 use Composer\Json\JsonManipulator;
 use Idm\Composer\Plugin\AbstractInfo;
 use Idm\Composer\Plugin\AppInfo;
+use Idm\Composer\Plugin\Traits\Command\CustomizeIdmApp\ProjectNameTrait;
 use Idm\Composer\Plugin\Traits\DefaultBranchTrait;
 use Idm\Composer\Plugin\Traits\SymfonyStyleTrait;
 use Idm\Composer\Plugin\Traits\VendorRepositoryTrait;
@@ -39,6 +40,7 @@ final class CustomizeIdmAppCommand extends AbstractCommand
 	use DefaultBranchTrait;
 	use LockableTrait;
 	use VendorRepositoryTrait;
+	use ProjectNameTrait;
 	use SymfonyStyleTrait;
 
 	protected AbstractInfo|AppInfo $info;
@@ -81,8 +83,10 @@ EOF
 		do {
 			$repository = $this->repositoryApp();
 			$this->info = new AppInfo($repository);
+			$projectName = $this->projectNameForApp($this->info->getProjectName());
 			$branch = $this->defaultBranch();
 
+			$this->info->setProjectName($projectName);
 			$this->info->setBranch($branch);
 
 			// Information
