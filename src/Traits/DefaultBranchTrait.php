@@ -2,7 +2,7 @@
 /**
  * Copyright 2025 (C) IDMarinas - All Rights Reserved
  *
- * Last modified by "idmarinas" on 12/02/2025, 19:44
+ * Last modified by "IDMarinas" on 19/06/2025, 17:46
  *
  * @project IDMarinas Composer Plugin
  * @see     https://github.com/idmarinas/composer-plugin
@@ -17,7 +17,7 @@
  * @since   1.0.0
  */
 
-namespace Idm\Composer\Plugin\Traits\Command\CustomizeIdmBundle;
+namespace Idm\Composer\Plugin\Traits;
 
 use Symfony\Component\Validator\Constraints\NoSuspiciousCharacters;
 use Symfony\Component\Validator\Constraints\NotBlank;
