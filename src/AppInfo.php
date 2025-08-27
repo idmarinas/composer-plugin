@@ -21,6 +21,8 @@ namespace Idm\Composer\Plugin;
 
 final class AppInfo extends AbstractInfo
 {
+	private string $projectName = '';
+
 	public function __construct (string $repository)
 	{
 		$this->setRepository($repository);
@@ -28,6 +30,13 @@ final class AppInfo extends AbstractInfo
 
 	public function getProjectName (string $name = ''): string
 	{
-		return parent::getProjectName($this->getRepository());
+		return $this->projectName;
+	}
+
+	public function setProjectName (string $projectName): self
+	{
+		$this->projectName = $projectName;
+
+		return $this;
 	}
 }
