@@ -34,7 +34,7 @@ final class AppInfo extends AbstractInfo
 			return $this->projectName;
 		}
 
-		return parent::getProjectName($name);
+		return parent::getProjectName($this->getRepository());
 	}
 
 	public function setProjectName (string $projectName): self
