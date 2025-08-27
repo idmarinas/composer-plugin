@@ -85,7 +85,7 @@ trait NamespaceBundleTrait
 		self::io()->table(
 			['Namespace', 'Bundle Class Name'],
 			[
-				['Idm\Bundle\Template', 'IdmTemplateBundle'],
+				['Idm\Bundle\TemplateBundle', 'IdmTemplateBundle'],
 				['Acme\Bundle\BlogBundle', 'AcmeBlogBundle'],
 			]
 		);
