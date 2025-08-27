@@ -24,7 +24,7 @@ namespace Idm\Composer\Plugin\Command;
 use Composer\Json\JsonManipulator;
 use Idm\Composer\Plugin\AbstractInfo;
 use Idm\Composer\Plugin\AppInfo;
-use Idm\Composer\Plugin\Traits\Command\CustomizeIdmBundle\DefaultBranchTrait;
+use Idm\Composer\Plugin\Traits\DefaultBranchTrait;
 use Idm\Composer\Plugin\Traits\SymfonyStyleTrait;
 use Idm\Composer\Plugin\Traits\VendorRepositoryTrait;
 use Symfony\Component\Console\Command\Command;
