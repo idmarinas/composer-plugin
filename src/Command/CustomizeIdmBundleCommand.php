@@ -22,10 +22,10 @@ namespace Idm\Composer\Plugin\Command;
 use Composer\Json\JsonManipulator;
 use Idm\Composer\Plugin\AbstractInfo;
 use Idm\Composer\Plugin\BundleInfo;
-use Idm\Composer\Plugin\Traits\Command\CustomizeIdmBundle\NamespaceBundleTrait;
-use Idm\Composer\Plugin\Traits\DefaultBranchTrait;
+use Idm\Composer\Plugin\Traits\BundleTrait;
+use Idm\Composer\Plugin\Traits\Command\IdmBundle\CustomizeNamespaceBundleTrait;
+use Idm\Composer\Plugin\Traits\CustomizeVendorRepositoryTrait;
 use Idm\Composer\Plugin\Traits\SymfonyStyleTrait;
-use Idm\Composer\Plugin\Traits\VendorRepositoryTrait;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
@@ -36,14 +36,14 @@ use function Symfony\Component\String\u;
 final class CustomizeIdmBundleCommand extends AbstractCommand
 {
 	use LockableTrait;
-	use DefaultBranchTrait;
-	use NamespaceBundleTrait;
-	use VendorRepositoryTrait;
+	use CustomizeNamespaceBundleTrait;
+	use CustomizeVendorRepositoryTrait;
 	use SymfonyStyleTrait;
+	use BundleTrait;
 
 	protected AbstractInfo|BundleInfo $info;
 
-	protected function configure (): void
+	protected function configure(): void
 	{
 		$this
 			->setName('idm:customize:bundle')
@@ -58,7 +58,7 @@ EOF
 		;
 	}
 
-	protected function execute (InputInterface $input, OutputInterface $output): int
+	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		self::setInputOutput($input, $output);
 
@@ -75,25 +75,7 @@ EOF
 			return Command::SUCCESS;
 		}
 
-		do {
-			$namespace = $this->namespaceBundle();
-			$this->info = new BundleInfo($namespace);
-			$repository = $this->repositoryBundle($this->info->getRepository());
-			$branch = $this->defaultBranch();
-
-			$this->info->setRepository($repository);
-			$this->info->setBranch($branch);
-
-			// Information
-			self::io()->title('Information of your Bundle');
-			self::io()->text('<fg=blue>Bundle name:</> ' . $this->info->getBundleName());
-			self::io()->text('<fg=blue>Namespace:</> ' . $this->info->getNamespace());
-			self::io()->text('<fg=blue>Repository name:</> ' . $this->info->getRepository());
-			self::io()->text('<fg=blue>Branch:</> ' . $this->info->getBranch());
-
-			$answer = self::io()->confirm('Is this information correct?');
-		} while (!$answer);
-
+		$this->info = $this->askBundleInfo();
 		$composer = $this->requireComposer(true, true);
 
 		$finder = self::finder('files')
@@ -124,19 +106,19 @@ EOF
 		return Command::SUCCESS;
 	}
 
-	protected function processFile (SplFileInfo $file, string &$content): string
+	protected function processFile(SplFileInfo $file, string &$content): string
 	{
 		$renameFile = '';
 		$content = u($content)
-			->replaceMatches('/Copyright \d{4} (C)/', 'Copyright ' . date('Y') . ' (C)')
-			->replaceMatches('#@date( +)\d{2}/\d{2}/\d{4}#', '@date${1}' . date('d/m/Y'))
-			->replaceMatches('/@time( +)\d{2}:\d{2}/', '@time${1}' . date('H:i'))
+			->replaceMatches('/Copyright \d{4} (C)/', 'Copyright '.date('Y').' (C)')
+			->replaceMatches('#@date( +)\d{2}/\d{2}/\d{4}#', '@date${1}'.date('d/m/Y'))
+			->replaceMatches('/@time( +)\d{2}:\d{2}/', '@time${1}'.date('H:i'))
 			->replace('IDMarinas Template Bundle', $this->info->getProjectName())
 			->replace('Idm\Bundle\Template\IdmTemplateBundle', $this->info->geFullClassName())
 			->replace('Idm\Bundle\Template', $this->info->getNamespace())
 			->replace('IdmTemplateBundle', $this->info->getBundleName())
 			->replaceMatches('#idmarinas/(|idm-)template-bundle#', $this->info->getRepository())
-			->replace('name: template_bundle', 'name: ' . $this->info->getDockerName())
+			->replace('name: template_bundle', 'name: '.$this->info->getDockerName())
 			->replace(
 				"INSTANCE: 'Writerside/itb'",
 				sprintf("INSTANCE: 'Writerside/%s'", $this->info->getProjectNameInitials())
@@ -144,7 +126,7 @@ EOF
 			->replace('SONAR_PROJECT_NAME_CHANGE_ME', u($this->info->getRepository())->replace('/', '_')->toString())
 			->replaceMatches(
 				'/(sonar.projectName=)(.*)/',
-				'${1}' . u($this->info->getProjectName())->after(' ')->toString()
+				'${1}'.u($this->info->getProjectName())->after(' ')->toString()
 			)
 			->replace('[ master ]', "[ {$this->info->getBranch()} ]")
 			->toString()
@@ -172,7 +154,7 @@ EOF
 				break;
 			case 'README.md':
 				$finder = self::finder('readme')
-					->in(dirname(__DIR__, 2) . '/templates')
+					->in(dirname(__DIR__, 2).'/templates')
 					->files()
 					->name('readme.tpl.md')
 				;
@@ -196,7 +178,7 @@ EOF
 				break;
 			case 'itb.tree':
 				$renameFile = u($file->getPathname())
-					->replace('itb.tree', $this->info->getProjectNameInitials() . '.tree')
+					->replace('itb.tree', $this->info->getProjectNameInitials().'.tree')
 					->toString()
 				;
 				$content = u($content)
