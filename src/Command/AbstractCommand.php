@@ -34,7 +34,7 @@ abstract class AbstractCommand extends BaseCommand
 
 	protected AbstractInfo $info;
 
-	protected function processFiles (Finder $finder, ProgressBar $progress): void
+	protected function processFiles(Finder $finder, ProgressBar $progress): void
 	{
 		foreach ($finder as $file) {
 			$progress->setMessage($file->getRelativePathname(), 'title');
@@ -52,7 +52,7 @@ abstract class AbstractCommand extends BaseCommand
 		}
 	}
 
-	final protected function replaceContentIdeaOfFile (SplFileInfo $file): void
+	final protected function replaceContentIdeaOfFile(SplFileInfo $file): void
 	{
 		$content = $file->getContents();
 		$renameFile = $this->processIdeaFile($file, $content);
@@ -60,7 +60,7 @@ abstract class AbstractCommand extends BaseCommand
 		$this->saveFile($file, $renameFile, $content);
 	}
 
-	final protected function replaceContentOfFile (SplFileInfo $file): void
+	final protected function replaceContentOfFile(SplFileInfo $file): void
 	{
 		$content = $file->getContents();
 
@@ -69,7 +69,7 @@ abstract class AbstractCommand extends BaseCommand
 		$this->saveFile($file, $renameFile, $content);
 	}
 
-	protected function processIdeaFile (SplFileInfo $file, string &$content): string
+	protected function processIdeaFile(SplFileInfo $file, string &$content): string
 	{
 		$renameFile = '';
 
@@ -94,7 +94,7 @@ abstract class AbstractCommand extends BaseCommand
 				break;
 			case 'modules.xml':
 				$content = u($content)
-					->replaceMatches('/IDMarinas Template \b(?:Symfony|Bundle)\b\.iml/i', $this->info->getProjectName() . '.iml')
+					->replaceMatches('/IDMarinas Template \b(?:Symfony|Bundle)\b\.iml/i', $this->info->getProjectName().'.iml')
 					->toString()
 				;
 				break;
@@ -109,7 +109,7 @@ abstract class AbstractCommand extends BaseCommand
 		return $renameFile;
 	}
 
-	protected function processFile (SplFileInfo $file, string &$content): string
+	protected function processFile(SplFileInfo $file, string &$content): string
 	{
 		$renameFile = '';
 
@@ -118,7 +118,7 @@ abstract class AbstractCommand extends BaseCommand
 				$manipulator = new JsonManipulator($content);
 				$manipulator->addMainKey('name', $this->info->getRepository());
 				$manipulator->addMainKey('homepage', $this->info->getGithubUrl());
-				$manipulator->addSubNode('support', 'issues', $this->info->getGithubUrl() . '/issues');
+				$manipulator->addSubNode('support', 'issues', $this->info->getGithubUrl().'/issues');
 				$manipulator->addConfigSetting('allow-plugins.idmarinas/composer-plugin', false);
 
 				$content = $manipulator->getContents();
@@ -133,14 +133,5 @@ abstract class AbstractCommand extends BaseCommand
 		}
 
 		return $renameFile;
-	}
-
-	final protected function saveFile (SplFileInfo $file, string $renameFile, string $content): void
-	{
-		self::filesystem()->dumpFile($file->getPathname(), $content);
-
-		if (!empty($renameFile)) {
-			self::filesystem()->rename($file->getPathname(), $renameFile, true);
-		}
 	}
 }

@@ -21,17 +21,18 @@ namespace Idm\Composer\Plugin\Traits;
 
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 
 trait FilesystemTrait
 {
 	private static array $finder = [];
 
-	protected static function filesystem (): Filesystem
+	protected static function filesystem(): Filesystem
 	{
 		return new Filesystem();
 	}
 
-	protected static function finder (null|int|string $instance = null, bool $removeBefore = false): Finder
+	protected static function finder(null|int|string $instance = null, bool $removeBefore = false): Finder
 	{
 		if (null === $instance) {
 			return new Finder();
@@ -46,5 +47,14 @@ trait FilesystemTrait
 		}
 
 		return self::$finder[$instance] = new Finder();
+	}
+
+	final protected function saveFile(SplFileInfo $file, string $renameFile, string $content): void
+	{
+		self::filesystem()->dumpFile($file->getPathname(), $content);
+
+		if (!empty($renameFile)) {
+			self::filesystem()->rename($file->getPathname(), $renameFile, true);
+		}
 	}
 }
