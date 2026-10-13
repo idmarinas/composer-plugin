@@ -24,10 +24,10 @@ namespace Idm\Composer\Plugin\Command;
 use Composer\Json\JsonManipulator;
 use Idm\Composer\Plugin\AbstractInfo;
 use Idm\Composer\Plugin\AppInfo;
-use Idm\Composer\Plugin\Traits\Command\CustomizeIdmApp\ProjectNameTrait;
+use Idm\Composer\Plugin\Traits\Command\IdmApp\ProjectNameTrait;
+use Idm\Composer\Plugin\Traits\CustomizeVendorRepositoryTrait;
 use Idm\Composer\Plugin\Traits\DefaultBranchTrait;
 use Idm\Composer\Plugin\Traits\SymfonyStyleTrait;
-use Idm\Composer\Plugin\Traits\VendorRepositoryTrait;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
@@ -39,7 +39,7 @@ final class CustomizeIdmAppCommand extends AbstractCommand
 {
 	use DefaultBranchTrait;
 	use LockableTrait;
-	use VendorRepositoryTrait;
+	use CustomizeVendorRepositoryTrait;
 	use ProjectNameTrait;
 	use SymfonyStyleTrait;
 
@@ -48,7 +48,7 @@ final class CustomizeIdmAppCommand extends AbstractCommand
 	/**
 	 * @inheritDoc
 	 */
-	protected function configure (): void
+	protected function configure(): void
 	{
 		$this
 			->setName('idm:customize:app')
@@ -63,7 +63,7 @@ EOF
 		;
 	}
 
-	protected function execute (InputInterface $input, OutputInterface $output): int
+	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		self::setInputOutput($input, $output);
 
@@ -91,9 +91,9 @@ EOF
 
 			// Information
 			self::io()->title('Information of your App');
-			self::io()->text('<fg=blue>Project name:</> ' . $this->info->getProjectName());
-			self::io()->text('<fg=blue>Repository name:</> ' . $this->info->getRepository());
-			self::io()->text('<fg=blue>Branch name:</> ' . $this->info->getBranch());
+			self::io()->text('<fg=blue>Project name:</> '.$this->info->getProjectName());
+			self::io()->text('<fg=blue>Repository name:</> '.$this->info->getRepository());
+			self::io()->text('<fg=blue>Branch name:</> '.$this->info->getBranch());
 
 			$answer = self::io()->confirm('Is this information correct?');
 		} while (!$answer);
@@ -128,17 +128,17 @@ EOF
 		return Command::SUCCESS;
 	}
 
-	protected function processFile (SplFileInfo $file, string &$content): string
+	protected function processFile(SplFileInfo $file, string &$content): string
 	{
 		$renameFile = '';
 
 		$content = u($content)
-			->replaceMatches('/Copyright \d{4} (C)/', 'Copyright ' . date('Y') . ' (C)')
-			->replaceMatches('#@date( +)\d{2}/\d{2}/\d{4}#', '@date${1}' . date('d/m/Y'))
-			->replaceMatches('/@time( +)\d{2}:\d{2}/', '@time${1}' . date('H:i'))
+			->replaceMatches('/Copyright \d{4} (C)/', 'Copyright '.date('Y').' (C)')
+			->replaceMatches('#@date( +)\d{2}/\d{2}/\d{4}#', '@date${1}'.date('d/m/Y'))
+			->replaceMatches('/@time( +)\d{2}:\d{2}/', '@time${1}'.date('H:i'))
 			->replace('IDMarinas Template Symfony', $this->info->getProjectName())
 			->replaceMatches('#idmarinas/(|idm-)template-symfony#', $this->info->getRepository())
-			->replace('name: template_symfony', 'name: ' . $this->info->getDockerName())
+			->replace('name: template_symfony', 'name: '.$this->info->getDockerName())
 			->toString()
 		;
 
