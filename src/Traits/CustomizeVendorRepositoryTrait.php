@@ -1,13 +1,13 @@
 <?php
 /**
- * Copyright 2024-2025 (C) IDMarinas - All Rights Reserved
+ * Copyright $originalComment.match("Copyright (\d+)", 1, "-",$today.year)2026 (C) IDMarinas - All Rights Reserved
  *
- * Last modified by "IDMarinas" on 19/06/2025, 17:46
+ * Last modified by "IDMarinas" on 13/10/2026, 18:56
  *
  * @project IDMarinas Composer Plugin
  * @see     https://github.com/idmarinas/composer-plugin
  *
- * @file    RepositoryBundleTrait.php
+ * @file    CustomizeVendorRepositoryTrait.php
  * @date    13/12/2024
  * @time    22:07
  *
@@ -26,7 +26,7 @@ use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\Validation;
 
-trait VendorRepositoryTrait
+trait CustomizeVendorRepositoryTrait
 {
 
 	/** @var string[] */
@@ -35,7 +35,7 @@ trait VendorRepositoryTrait
 	/**
 	 * Repository name for Bundle
 	 */
-	protected function repositoryBundle (?string $default = null): string
+	protected function repositoryBundle(?string $default = null): string
 	{
 		self::$invalid = [
 			'idmarinas/template-bundle',
@@ -48,7 +48,7 @@ trait VendorRepositoryTrait
 	/**
 	 * Repository name for App
 	 */
-	protected function repositoryApp (?string $default = null): string
+	protected function repositoryApp(?string $default = null): string
 	{
 		self::$invalid = [
 			'idmarinas/template-symfony',
@@ -58,7 +58,7 @@ trait VendorRepositoryTrait
 		return $this->vendorRepository($default);
 	}
 
-	private function vendorRepository (?string $default = null): string
+	private function vendorRepository(?string $default = null): string
 	{
 		$validation = Validation::createCallable(
 			new NotBlank(allowNull: false),
