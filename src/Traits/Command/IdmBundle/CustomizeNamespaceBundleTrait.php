@@ -17,7 +17,7 @@
  * @since   1.0.0
  */
 
-namespace Idm\Composer\Plugin\Traits\Command\CustomizeIdmBundle;
+namespace Idm\Composer\Plugin\Traits\Command\IdmBundle;
 
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\NoSuspiciousCharacters;
@@ -27,12 +27,12 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\Validation;
 use function Symfony\Component\String\u;
 
-trait NamespaceBundleTrait
+trait CustomizeNamespaceBundleTrait
 {
 	/**
 	 * (Namespace + Bundle Class Name) of the Bundle
 	 */
-	private function namespaceBundle (): string
+	private function namespaceBundle(): string
 	{
 		$validation = Validation::createCallable(
 			new NotBlank(allowNull: false),

@@ -17,7 +17,7 @@
  * @since   1.4.0
  */
 
-namespace Idm\Composer\Plugin\Traits\Command\CustomizeIdmApp;
+namespace Idm\Composer\Plugin\Traits\Command\IdmApp;
 
 use Symfony\Component\Validator\Constraints\NoSuspiciousCharacters;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -25,7 +25,7 @@ use Symfony\Component\Validator\Validation;
 
 trait ProjectNameTrait
 {
-	public function projectNameForApp (?string $default = null): string
+	public function projectNameForApp(?string $default = null): string
 	{
 		$validation = Validation::createCallable(
 			new NotBlank(allowNull: false),
