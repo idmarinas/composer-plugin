@@ -21,7 +21,7 @@
 	</php>
 
 	<testsuites>
-		<testsuite name="TPL_BUNDLE_NAME Test Suite">
+		<testsuite name="TPL_PROJECT_NAME Test Suite">
 			<directory>tests</directory>
 		</testsuite>
 	</testsuites>
