@@ -1,0 +1,24 @@
+name: TPL_TEMPLATE_BUNDLE
+
+services:
+  php:
+    image: idmarinas/php:8.3-xdebug
+    environment:
+      SYMFONY_REQUIRE: '6.4.*'
+    healthcheck:
+      test: php -v || exit 1
+    networks:
+      - default
+      - mailpit
+    volumes:
+      - ./:/var/www/html
+      ## SSH
+      - ssh_key:/root/.ssh
+
+volumes:
+  ssh_key:
+    external: true
+
+networks:
+  mailpit:
+    external: true
