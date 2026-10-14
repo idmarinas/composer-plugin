@@ -24,21 +24,23 @@ use Composer\IO\IOInterface;
 use Composer\Plugin\Capability\CommandProvider;
 use Composer\Plugin\Capable;
 use Composer\Plugin\PluginInterface;
+use Idm\Composer\Plugin\Command\CreateBundleCommand;
 use Idm\Composer\Plugin\Command\CustomizeIdmAppCommand;
 use Idm\Composer\Plugin\Command\CustomizeIdmBundleCommand;
 
 class Plugin implements PluginInterface, Capable, CommandProvider
 {
-	public function getCapabilities (): array
+	public function getCapabilities(): array
 	{
 		return [
 			CommandProvider::class => self::class,
 		];
 	}
 
-	public function getCommands (): array
+	public function getCommands(): array
 	{
 		return [
+			new CreateBundleCommand(),
 			new CustomizeIdmAppCommand(),
 			new CustomizeIdmBundleCommand(),
 		];
@@ -47,15 +49,15 @@ class Plugin implements PluginInterface, Capable, CommandProvider
 	/**
 	 * @inheritDoc
 	 */
-	public function activate (Composer $composer, IOInterface $io): void {}
+	public function activate(Composer $composer, IOInterface $io): void {}
 
 	/**
 	 * @inheritDoc
 	 */
-	public function deactivate (Composer $composer, IOInterface $io): void {}
+	public function deactivate(Composer $composer, IOInterface $io): void {}
 
 	/**
 	 * @inheritDoc
 	 */
-	public function uninstall (Composer $composer, IOInterface $io): void {}
+	public function uninstall(Composer $composer, IOInterface $io): void {}
 }
