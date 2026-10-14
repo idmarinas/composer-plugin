@@ -114,7 +114,7 @@ EOF
 			->replaceMatches('#@date( +)\d{2}/\d{2}/\d{4}#', '@date${1}'.date('d/m/Y'))
 			->replaceMatches('/@time( +)\d{2}:\d{2}/', '@time${1}'.date('H:i'))
 			->replace('IDMarinas Template Bundle', $this->info->getProjectName())
-			->replace('Idm\Bundle\Template\IdmTemplateBundle', $this->info->geFullClassName())
+			->replace('Idm\Bundle\Template\IdmTemplateBundle', $this->info->getFullClassName())
 			->replace('Idm\Bundle\Template', $this->info->getNamespace())
 			->replace('IdmTemplateBundle', $this->info->getBundleName())
 			->replaceMatches('#idmarinas/(|idm-)template-bundle#', $this->info->getRepository())
@@ -167,7 +167,7 @@ EOF
 					$file = $file->current()->getContents();
 					$file = u($file)
 						->replace('<package-name>', $this->info->getRepository())
-						->replace('<vendor>\<bundle-name>\<bundle-long-name>', $this->info->geFullClassName())
+						->replace('<vendor>\<bundle-name>\<bundle-long-name>', $this->info->getFullClassName())
 						->toString()
 					;
 					$content = u($content)

@@ -25,7 +25,7 @@ final class BundleInfo extends AbstractInfo
 {
 	private readonly string $fullClassName;
 
-	public function __construct (string $namespace)
+	public function __construct(string $namespace)
 	{
 		$this->fullClassName = str_replace('/', '\\', $namespace);
 		$this->repositoryVendor = u($this->fullClassName)->before('\\')->replace('Idm', 'idmarinas')->toString();
@@ -36,22 +36,22 @@ final class BundleInfo extends AbstractInfo
 		;
 	}
 
-	public function getBundleName (): string
+	public function getBundleName(): string
 	{
 		return u($this->fullClassName)->afterLast('\\')->toString();
 	}
 
-	public function getNamespace (): string
+	public function getNamespace(): string
 	{
 		return u($this->fullClassName)->beforeLast('\\')->toString();
 	}
 
-	public function getProjectName (string $name = ''): string
+	public function getProjectName(string $name = ''): string
 	{
 		return parent::getProjectName($this->getBundleName());
 	}
 
-	public function getProjectNameInitials (): string
+	public function getProjectNameInitials(): string
 	{
 		$array = u($this->getProjectName())
 			->lower()
@@ -63,18 +63,18 @@ final class BundleInfo extends AbstractInfo
 		return implode('', $array);
 	}
 
-	public function geFullClassName (): string
+	public function getFullClassName(): string
 	{
 		return $this->fullClassName;
 	}
 
-	public function getAutoload (): string
+	public function getAutoload(): string
 	{
-		return $this->getNamespace() . '\\';
+		return $this->getNamespace().'\\';
 	}
 
-	public function getAutoloadDev (): string
+	public function getAutoloadDev(): string
 	{
-		return $this->getAutoload() . 'Tests\\';
+		return $this->getAutoload().'Tests\\';
 	}
 }
