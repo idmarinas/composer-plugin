@@ -3,7 +3,7 @@
 
 /.docker/ export-ignore
 /.github export-ignore
-/.idea/ export-ignore
+.idea/ export-ignore
 /build/ export-ignore
 /tests/ export-ignore
 /vendor/ export-ignore
