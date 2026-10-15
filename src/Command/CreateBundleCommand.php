@@ -138,7 +138,8 @@ EOF
 			$filename = u($dir.'/'.$file->getRelativePathname())
 				->replace('TPL_BUNDLE_NAME', $this->info->getBundleName())
 				->replace('.tpl.php', '.php')
-				->replaceMatches('/.tpl$/', '')
+				->replace('.tpl/', '/')          // Dir
+				->replaceMatches('/.tpl$/', '')  // File
 				->toString()
 			;
 			$content = $this->processContent($file);
