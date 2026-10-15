@@ -24,15 +24,31 @@ use function Symfony\Component\String\u;
 abstract class AbstractInfo
 {
 	protected string $repositoryVendor;
+
 	protected string $repositoryName;
+
 	protected string $branch;
 
-	public function getRepository (): string
+	protected string $description;
+
+	public function getDescription(): string
+	{
+		return $this->description;
+	}
+
+	public function setDescription(string $description): static
+	{
+		$this->description = $description;
+
+		return $this;
+	}
+
+	public function getRepository(): string
 	{
 		return sprintf('%s/%s', $this->getRepositoryVendor(), $this->getRepositoryName());
 	}
 
-	public function setRepository (string $repository): self
+	public function setRepository(string $repository): self
 	{
 		$this->repositoryVendor = u($repository)->before('/')->toString();
 		$this->repositoryName = u($repository)->afterLast('/')->toString();
@@ -40,29 +56,29 @@ abstract class AbstractInfo
 		return $this;
 	}
 
-	public function getRepositoryVendor (): string
+	public function getRepositoryVendor(): string
 	{
 		return $this->repositoryVendor;
 	}
 
-	public function getRepositoryName (): string
+	public function getRepositoryName(): string
 	{
 		return $this->repositoryName;
 	}
 
-	public function getBranch (): string
+	public function getBranch(): string
 	{
 		return $this->branch;
 	}
 
-	public function setBranch (string $branch): self
+	public function setBranch(string $branch): self
 	{
 		$this->branch = $branch;
 
 		return $this;
 	}
 
-	public function getProjectName (string $name): string
+	public function getProjectName(string $name): string
 	{
 		return u($name)
 			->snake()
@@ -73,7 +89,7 @@ abstract class AbstractInfo
 		;
 	}
 
-	public function getDockerName (): string
+	public function getDockerName(): string
 	{
 		return u($this->getRepositoryName())
 			->replace('-', '_')
@@ -81,9 +97,9 @@ abstract class AbstractInfo
 		;
 	}
 
-	public function getGithubUrl (): string
+	public function getGithubUrl(): string
 	{
-		return 'https://github.com/' . $this->getRepository();
+		return 'https://github.com/'.$this->getRepository();
 	}
 
 }
