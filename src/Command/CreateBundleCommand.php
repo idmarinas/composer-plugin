@@ -101,7 +101,7 @@ EOF
 
 		$progress = self::getProgressBar();
 
-		self::progressStart($progress, $bundle->count() + 3);
+		self::progressStart($progress, $bundle->count() + 2);
 
 		if (self::filesystem()->exists($projectIdeaDir)) {
 			$idea = self::finder('idea')
@@ -125,9 +125,6 @@ EOF
 		$this->updateComposerFile($composer);
 		$progress->advance();
 
-		self::filesystem()->rename($projectDir.'/github', $projectDir.'/.github', true);
-		$progress->advance();
-
 		self::progressFinish($progress, $this->info->getProjectName());
 
 		return Command::SUCCESS;
@@ -141,6 +138,7 @@ EOF
 			$filename = u($dir.'/'.$file->getRelativePathname())
 				->replace('TPL_BUNDLE_NAME', $this->info->getBundleName())
 				->replace('.tpl.php', '.php')
+				->replaceMatches('/.tpl$/', '')
 				->toString()
 			;
 			$content = $this->processContent($file);
