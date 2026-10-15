@@ -94,13 +94,30 @@ EOF
 			->in(dirname(__DIR__, 2).'/templates/bundle')
 			->ignoreDotFiles(false)
 			->ignoreUnreadableDirs()
-			->exclude(['.idea'])
+			->exclude(['idea'])
 			->files()
 			->sortByName()
 		;
 
 		$progress = self::getProgressBar();
-		self::progressStart($progress, $bundle->count() + 2);
+
+		self::progressStart($progress, $bundle->count() + 3);
+
+		if (self::filesystem()->exists($projectIdeaDir)) {
+			$idea = self::finder('idea')
+				->in(dirname(__DIR__, 2).'/templates/bundle/idea')
+				->ignoreDotFiles(false)
+				->ignoreUnreadableDirs()
+				->files()
+				->sortByName()
+			;
+
+			$progress->setMaxSteps($progress->getMaxSteps() + $idea->count());
+			$progress->setMessage('Creating .idea files', 'title');
+
+			$this->processFiles($idea, $projectIdeaDir, $progress);
+			$this->processIdeaFiles($projectIdeaDir, $progress);
+		}
 
 		$progress->setMessage('Creating Bundle files', 'title');
 		$this->processFiles($bundle, $projectDir, $progress);
@@ -108,21 +125,8 @@ EOF
 		$this->updateComposerFile($composer);
 		$progress->advance();
 
-		if (self::filesystem()->exists($projectIdeaDir)) {
-			$idea = self::finder('idea')
-				->in(dirname(__DIR__, 2).'/templates/bundle/.idea')
-				->ignoreDotFiles(false)
-				->ignoreUnreadableDirs()
-				->files()
-				->sortByName()
-			;
-
-			self::progressStart($progress, ($idea->count()));
-			$progress->setMessage('Creating .idea files', 'title');
-
-			$this->processFiles($idea, $projectIdeaDir, $progress);
-			$this->processIdeaFiles($projectIdeaDir, $progress);
-		}
+		self::filesystem()->rename($projectDir.'/github', $projectDir.'/.github', true);
+		$progress->advance();
 
 		self::progressFinish($progress, $this->info->getProjectName());
 
